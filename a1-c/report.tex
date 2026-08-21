@@ -11,6 +11,7 @@
 \usepackage{enumitem}
 \usepackage{fancyhdr}
 \usepackage{graphicx}
+\usepackage{float}
 \usepackage{tikz}
 \usepackage{pgfplots}
 \usepackage{setspace}
@@ -63,7 +64,7 @@
     \vspace{0.4cm}
     {\huge\bfseries Assignment 1 Report -- Comprehensive Evaluation of Error Detection Schemes in Network Transmission \par}
     \vspace{0.3cm}
-    {\Large\itshape Comparative Reliability, Boundary Failures, and Overhead of 16-Bit Internet Checksum and Cyclic Redundancy Checks (CRC-8, 10, 16, 32) \par}
+    {\Large\itshape Error detection with 16-Bit Internet Checksum and Cyclic Redundancy Checks (CRC-8, 10, 16, 32) \par}
     \vspace{0.4cm}
     \rule{\textwidth}{1.2pt}\par
     
@@ -72,14 +73,13 @@
     \begin{flushleft} \large
         \textbf{Course:} Computer Networks Laboratory (BCSE-III) \\
         \textbf{Student Name:} Sampad De \\
+        \textbf{Section:} A1 \\
         \textbf{Roll Number:} 002410501025 \\
         \textbf{Assignment:} Assignment 1 (Error Detection) \\
-        \textbf{Date of Submission:} August 19, 2026
+        \textbf{Date of Submission:} August 21, 2026
     \end{flushleft}
     
     \vfill
-    
-    {\large Kolkata, West Bengal, India \par}
 \end{titlepage}
 
 \newpage
@@ -98,7 +98,7 @@ This project was developed and evaluated using the following environment:
 \midrule
 Operating System & macOS \\
 Networking & BSD Sockets (UDP) \\
-Compiler & Apple Clang (\texttt{clang}) \\
+Compiler & Native Clang (\texttt{clang}) \\
 Profiling Timer & POSIX \texttt{clock\_gettime(CLOCK\_MONOTONIC)} \\
 \bottomrule
 \end{tabular}
@@ -179,7 +179,7 @@ An error is undetected \textbf{if and only if} the error polynomial $E(x)$ is ev
 \subsection{Frame Structure and In-Memory Layout}
 To simulate an Ethernet-like data-link frame, I defined a structured packet containing a 14-byte MAC header, a 44-byte data payload, and a 4-byte trailer.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \resizebox{\linewidth}{!}{
 \begin{tikzpicture}[
@@ -225,6 +225,7 @@ To simulate an Ethernet-like data-link frame, I defined a structured packet cont
 \label{fig:framelayout}
 \end{figure}
 
+\noindent\begin{minipage}{\linewidth}
 The C struct definition from \texttt{headers/info.h} is shown below:
 \begin{lstlisting}[caption={Frame Definition (\texttt{info.h})}]
 #define PAYLOAD_SIZE 44
@@ -245,6 +246,7 @@ typedef struct Frame {
     frame_trailer trailer;
 } frame;
 \end{lstlisting}
+\end{minipage}
 
 \noindent\textbf{Memory Alignment Details:} The header (14 bytes) plus payload (44 bytes) equals exactly 58 bytes. Because the trailer contains a 32-bit integer (\texttt{uint32\_t}), the C compiler inserts 2 bytes of padding between the payload and the trailer so that \texttt{crc\_send} aligns on a 4-byte memory boundary. Hence, \texttt{sizeof(frame)} is 64 bytes. The verification functions compute check values strictly over the first 58 bytes ($14 + 44$), ignoring compiler padding and the trailer itself.
 
@@ -253,6 +255,7 @@ This project was developed, tested, and benchmarked natively on a local macOS en
 
 
 \subsection{Implementation of Checksum and CRC Algorithms}
+\noindent\begin{minipage}{\linewidth}
 The C implementation of the 16-bit Internet Checksum in \texttt{src/error\_injection.c} is:
 
 \begin{lstlisting}[caption={Checksum Calculation (\texttt{error\_injection.c})}]
@@ -273,7 +276,9 @@ uint16_t compute_checksum(uint8_t* data, size_t len) {
     return (uint16_t)(~sum);
 }
 \end{lstlisting}
+\end{minipage}
 
+\noindent\begin{minipage}{\linewidth}
 For the CRC family, a generalized bit-serial function was written to handle any polynomial degree up to 32 bits:
 
 \begin{lstlisting}[caption={Generalized CRC Algorithm (\texttt{error\_injection.c})}]
@@ -299,6 +304,7 @@ uint64_t calculate_crc(const uint8_t* data,size_t length,uint64_t polynomial,uns
     return crc;
 }
 \end{lstlisting}
+\end{minipage}
 
 \subsection{CRC Polynomial Constants and Specifications}
 Table~\ref{tab:polynomials} details the generator polynomials evaluated in this study. 
@@ -328,16 +334,44 @@ The generator polynomials were selected based on standard networking specificati
 \section{Methodology and Error Injection Models}
 
 \subsection{Client-Server UDP Pipeline}
-To emulate physical network transmission, \texttt{sender.c} and \texttt{receiver.c} communicate over standard BSD sockets using UDP (\texttt{SOCK\_DGRAM}) on port 9876. Figure~\ref{fig:pipeline} illustrates the transmission and verification pipeline.
+To emulate physical network transmission, \texttt{sender.c} and \texttt{receiver.c} communicate over standard BSD sockets using UDP (\texttt{SOCK\_DGRAM}) on port 9876. 
 
-\begin{figure}[htbp]
+\noindent\begin{minipage}{\linewidth}
+\noindent\textbf{Receiver Console and Frame Logging:} When frames arrive over the UDP socket, \texttt{receiver.c} validates the check value and outputs the frame status to the terminal while recording frame records into \texttt{output.txt}:
+
+\begin{lstlisting}[language={},caption={Receiver Console Execution and Generated Frame Log (\texttt{output.txt})}]
+$ ./receiver
+Socket created successfully; bound to port 9876
+Select Error Detection Method (0: Checksum, 1: CRC-8, 2: CRC-10, 3: CRC-16, 4: CRC-32): 4
+Waiting for data...
+
+[ACCEPT] Frame received without error
+[Error Detected]
+[ACCEPT] Frame received without error
+Socket closed successfully
+
+--- Recorded Frame Blocks in output.txt ---
+<START>
+STATUS: VALID (Length: 41 bytes)
+Ab1!@#9()_+[]{}|;:',./<>?~=- `aBcDeFgHiJk
+<END>
+<START>
+STATUS: CORRUPTED (Length: 41 bytes)
+@b1!@#9()_+[]{}|;:',./<>?~=- `aBcDeFgHiJk
+<END>
+\end{lstlisting}
+\end{minipage}
+
+Figure~\ref{fig:pipeline} illustrates the end-to-end transmission and verification pipeline between the sender and receiver applications.
+
+\begin{figure}[H]
 \centering
-\resizebox{\linewidth}{!}{
+\resizebox{0.92\linewidth}{!}{
 \begin{tikzpicture}[
-    node distance=1.2cm and 1.0cm,
-    block/.style={rectangle, draw=blue!70!black, fill=blue!5, thick, text width=3.2cm, minimum height=1.0cm, text centered, font=\sffamily\small, rounded corners=2pt},
-    proc/.style={rectangle, draw=green!60!black, fill=green!5, thick, text width=3.2cm, minimum height=1.0cm, text centered, font=\sffamily\small, rounded corners=2pt},
-    errblock/.style={rectangle, draw=red!70!black, fill=red!10, thick, text width=3.2cm, minimum height=1.0cm, text centered, font=\sffamily\small, rounded corners=2pt},
+    node distance=0.9cm and 1.2cm,
+    block/.style={rectangle, draw=blue!70!black, fill=blue!5, thick, text width=3.4cm, minimum height=0.9cm, text centered, font=\sffamily\small, rounded corners=2pt},
+    proc/.style={rectangle, draw=green!60!black, fill=green!5, thick, text width=3.4cm, minimum height=0.9cm, text centered, font=\sffamily\small, rounded corners=2pt},
+    errblock/.style={rectangle, draw=red!70!black, fill=red!10, thick, text width=3.4cm, minimum height=0.9cm, text centered, font=\sffamily\small, rounded corners=2pt},
     line/.style={draw, -Latex, thick}
 ]
     % Sender Column
@@ -386,7 +420,7 @@ In my burst testing, the burst starting location $S$ is drawn from a discrete un
 where $N_{\text{bits}} = 464$ (58 bytes) and $L$ is the burst length in bits. Within this window $[S, S + L - 1]$, every bit is flipped independently with a fixed uniform probability $p = 0.70$. 
 
 \noindent\textbf{Why Uniform Burst Testing is Essential:}
-Physical noise sources such as electromagnetic surges or lightning can strike an Ethernet frame at any point during transmission with equal probability. By distributing the burst starting position uniformly across all 464 bits, I avoided structural bias (such as aligning errors only with byte boundaries). This allowed me to observe how bit-serial CRC shift registers behave across arbitrary bit offsets.
+Physical noise sources such as electromagnetic surges or lightning can strike an Ethernet frame at any point during transmission with equal probability. By distributing the burst starting position uniformly across all 464 bits, I avoided structural bias (such as aligning errors only with byte boundaries).
 
 % ==================== SECTION 5 ====================
 \section{Experimental Results and Empirical Evaluation}
@@ -449,30 +483,29 @@ CRC-32 & 96.9470\% & 0.0000\% & 3.0530\% & 0.0000\% \\
 \caption{Isolated Double Bit Error Detection Rates (200,000 trials).}
 \label{tab:doublebit}
 \end{table}
-
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \begin{tikzpicture}
 \begin{axis}[
     ybar,
-    width=0.75\textwidth,
+    width=0.82\textwidth,
     height=6.0cm,
-    bar width=14pt,
+    bar width=10pt,
     enlarge x limits=0.2,
     legend style={at={(0.5,-0.22)}, anchor=north, legend columns=-1, font=\sffamily\footnotesize},
-    ylabel={Detection Percentage (\%)},
+    ylabel={Detection Rate (\%)},
     symbolic x coords={CRC-8, CRC-10, CRC-16, CRC-32},
     xtick=data,
     nodes near coords,
-    nodes near coords style={font=\sffamily\scriptsize},
-    ymin=90, ymax=102,
+    nodes near coords style={font=\sffamily\scriptsize, /pgf/number format/fixed, /pgf/number format/precision=2},
+    ymin=90, ymax=104,
 ]
-\addplot[fill=blue!70!black] coordinates {(CRC-8,96.06) (CRC-10,96.94) (CRC-16,96.94) (CRC-32,96.94)};
-\addplot[fill=orange!80!black] coordinates {(CRC-8,3.05) (CRC-10,3.05) (CRC-16,3.05) (CRC-32,3.05)};
-\legend{Both Caught, CRC Only (Checksum Missed)}
+\addplot[fill=blue!70!black] coordinates {(CRC-8,96.95) (CRC-10,96.95) (CRC-16,96.95) (CRC-32,96.95)};
+\addplot[fill=orange!80!black] coordinates {(CRC-8,99.12) (CRC-10,100.00) (CRC-16,100.00) (CRC-32,100.00)};
+\legend{Checksum Detection, CRC Detection}
 \end{axis}
 \end{tikzpicture}
-\caption{Double Bit Error Detection: The Checksum misses $\sim3.05\%$ of errors where CRC succeeds.}
+\caption{Double Bit Error Detection: Comparison of total detection rate between Checksum ($96.95\%$) and CRC schemes.}
 \label{fig:doublebit}
 \end{figure}
 
@@ -529,22 +562,26 @@ CRC-32 & 99.9995\% & 0.0000\% & 0.0005\% & 0.0000\% \\
 \label{tab:bursts}
 \end{table}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \begin{tikzpicture}
 \begin{axis}[
     ybar,
-    width=0.75\textwidth,
+    width=0.82\textwidth,
     height=6.0cm,
-    bar width=13pt,
+    bar width=10pt,
     enlarge x limits=0.2,
     legend style={at={(0.5,-0.22)}, anchor=north, legend columns=-1, font=\sffamily\footnotesize},
     ylabel={CRC Miss Rate (\%)},
     symbolic x coords={CRC-8, CRC-10, CRC-16, CRC-32},
     xtick=data,
     nodes near coords,
-    nodes near coords style={font=\sffamily\scriptsize},
-    ymin=0, ymax=0.5,
+    nodes near coords style={
+        font=\sffamily\tiny,
+        /pgf/number format/fixed,
+        /pgf/number format/precision=3
+    },
+    ymin=0, ymax=0.55,
 ]
 \addplot[fill=purple!70!black] coordinates {(CRC-8,0.3655) (CRC-10,0.0785) (CRC-16,0.0015) (CRC-32,0.0000)};
 \addplot[fill=teal!70!black] coordinates {(CRC-8,0.3925) (CRC-10,0.0915) (CRC-16,0.0015) (CRC-32,0.0000)};
@@ -609,7 +646,7 @@ To measure computational efficiency, I executed 5,000,000 iterations over a 60-b
 \label{tab:benchmark}
 \end{table}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \begin{tikzpicture}
 \begin{axis}[
@@ -622,7 +659,7 @@ To measure computational efficiency, I executed 5,000,000 iterations over a 60-b
     symbolic x coords={Checksum, CRC-8, CRC-10, CRC-16, CRC-32},
     xtick=data,
     nodes near coords,
-    nodes near coords style={font=\sffamily\scriptsize},
+    nodes near coords style={font=\sffamily\scriptsize, /pgf/number format/fixed, /pgf/number format/precision=2},
     ymin=0, ymax=650,
 ]
 \addplot[fill=cyan!70!black] coordinates {(Checksum,452.07) (CRC-8,20.03) (CRC-10,20.57) (CRC-16,20.44) (CRC-32,19.93)};
@@ -705,9 +742,10 @@ My empirical findings confirm the theoretical models:
 
 \section{Sources Used}
 \begin{enumerate}[leftmargin=*]
-    \item Course Lecture Slides and Notes on Error Detection (3rd Semester Computer Networks).
+    \item Ma'am's slides and notes on Error Detection (3rd Semester Data Communications).
     \item Andrei, \textit{C Sockets for Dummies} (\url{https://medium.com/@andrei.cn08_6584/c-sockets-for-dummies-4be35384eb48}).
-    \item \textbf{AI Assistance (Gemini 3.1 Pro):} AI was used for statistical sampling and benchmarking, generation of randomized test cases, production of statistical reports, and creation of \LaTeX{} graphs and visualizations. Since I am not yet familiar with \LaTeX{} formatting, the document typesetting and formatting was also handled with AI assistance.
+    \item \textbf{AI Assistance (Gemini 3.1 Pro):} AI was used for statistical sampling and benchmarking, generation of randomized test cases, production of statistical reports, and creation of latex graphs and visualizations. Since I am not yet familiar with latex formatting, the document typesetting and formatting was also handled with AI assistance.
+    \item \textbf{Source Code Repository:} \url{https://github.com/Sampad2006/CN-Lab-Assignments}
 \end{enumerate}
 
 \end{document}

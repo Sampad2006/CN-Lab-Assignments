@@ -1,2 +1,10 @@
-.vscode/
+# Compiled C/C++ Binaries
+receiver
+sender
+test_eval
+*.out
+*.o
+
+# macOS Debug Symbols & System Files
+*.dSYM/
 .DS_Store
