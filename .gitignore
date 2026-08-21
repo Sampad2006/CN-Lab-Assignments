@@ -1,10 +1,10 @@
-# Compiled C/C++ Binaries
+# Compiled Binaries
 receiver
 sender
 test_eval
 *.out
 *.o
 
-# macOS Debug Symbols & System Files
+#cache
 *.dSYM/
 .DS_Store
