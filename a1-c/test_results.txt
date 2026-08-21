@@ -1,0 +1,86 @@
+# Comparative Evaluation Results (Checksum vs CRC)
+
+This report provides a comparative study of the error detection rates, overlap, and computational efficiency of the 16-bit Checksum against various CRC options (CRC-8, CRC-10, CRC-16, and CRC-32).
+
+## 1. Error Detection & Overlap Analysis (200000 trials per model)
+
+#### Error Model: Single Bit Error
+
+| Scheme | Both Detected | Checksum Only | CRC Only | Neither (Missed Both) | CRC Miss Rate | Checksum Miss Rate |
+|--------|---------------|---------------|----------|----------------------|---------------|--------------------|
+| CRC-8 | 100.0000% | 0.0000% | 0.0000% | 0.0000% | 0.0000% | 0.0000% |
+| CRC-10 | 100.0000% | 0.0000% | 0.0000% | 0.0000% | 0.0000% | 0.0000% |
+| CRC-16 | 100.0000% | 0.0000% | 0.0000% | 0.0000% | 0.0000% | 0.0000% |
+| CRC-32 | 100.0000% | 0.0000% | 0.0000% | 0.0000% | 0.0000% | 0.0000% |
+
+#### Error Model: Isolated Double Bit Error
+
+| Scheme | Both Detected | Checksum Only | CRC Only | Neither (Missed Both) | CRC Miss Rate | Checksum Miss Rate |
+|--------|---------------|---------------|----------|----------------------|---------------|--------------------|
+| CRC-8 | 96.0650% | 0.8820% | 3.0530% | 0.0000% | 0.8820% | 3.0530% |
+| CRC-10 | 96.9470% | 0.0000% | 3.0530% | 0.0000% | 0.0000% | 3.0530% |
+| CRC-16 | 96.9470% | 0.0000% | 3.0530% | 0.0000% | 0.0000% | 3.0530% |
+| CRC-32 | 96.9470% | 0.0000% | 3.0530% | 0.0000% | 0.0000% | 3.0530% |
+
+#### Error Model: Odd Number of Errors
+
+| Scheme | Both Detected | Checksum Only | CRC Only | Neither (Missed Both) | CRC Miss Rate | Checksum Miss Rate |
+|--------|---------------|---------------|----------|----------------------|---------------|--------------------|
+| CRC-8 | 99.9255% | 0.0000% | 0.0745% | 0.0000% | 0.0000% | 0.0745% |
+| CRC-10 | 99.9255% | 0.0000% | 0.0745% | 0.0000% | 0.0000% | 0.0745% |
+| CRC-16 | 99.9255% | 0.0000% | 0.0745% | 0.0000% | 0.0000% | 0.0745% |
+| CRC-32 | 99.9255% | 0.0000% | 0.0745% | 0.0000% | 0.0000% | 0.0745% |
+
+#### Error Model: Burst Error (Length 12)
+
+| Scheme | Both Detected | Checksum Only | CRC Only | Neither (Missed Both) | CRC Miss Rate | Checksum Miss Rate |
+|--------|---------------|---------------|----------|----------------------|---------------|--------------------|
+| CRC-8 | 99.6345% | 0.3655% | 0.0000% | 0.0000% | 0.3655% | 0.0000% |
+| CRC-10 | 99.9215% | 0.0785% | 0.0000% | 0.0000% | 0.0785% | 0.0000% |
+| CRC-16 | 99.9985% | 0.0015% | 0.0000% | 0.0000% | 0.0015% | 0.0000% |
+| CRC-32 | 100.0000% | 0.0000% | 0.0000% | 0.0000% | 0.0000% | 0.0000% |
+
+#### Error Model: Burst Error (Length 32)
+
+| Scheme | Both Detected | Checksum Only | CRC Only | Neither (Missed Both) | CRC Miss Rate | Checksum Miss Rate |
+|--------|---------------|---------------|----------|----------------------|---------------|--------------------|
+| CRC-8 | 99.6070% | 0.3925% | 0.0005% | 0.0000% | 0.3925% | 0.0005% |
+| CRC-10 | 99.9080% | 0.0915% | 0.0005% | 0.0000% | 0.0915% | 0.0005% |
+| CRC-16 | 99.9980% | 0.0015% | 0.0005% | 0.0000% | 0.0015% | 0.0005% |
+| CRC-32 | 99.9995% | 0.0000% | 0.0005% | 0.0000% | 0.0000% | 0.0005% |
+
+## 2. Speed and Performance Benchmarks
+
+### Computational Efficiency Benchmarks (5000000 iterations)
+
+| Scheme | Total Time (s) | Avg Time per Frame (ns) | Throughput (MB/s) |
+|--------|----------------|-------------------------|-------------------|
+| Checksum | 0.6329 s | 126.57 ns | 452.07 MB/s |
+| CRC-8 | 14.2855 s | 2857.10 ns | 20.03 MB/s |
+| CRC-10 | 13.9065 s | 2781.30 ns | 20.57 MB/s |
+| CRC-16 | 13.9979 s | 2799.59 ns | 20.44 MB/s |
+| CRC-32 | 14.3587 s | 2871.75 ns | 19.93 MB/s |
+
+## 3. Boundary Cases and Concrete Examples
+
+
+### Concrete Examples of Error Detection Cases (with CRC-8)
+
+**Case 1: Error detected by both CRC-8 and Checksum**
+- Original Checksum: 0xF543, Corrupted Checksum: 0xF747 (Detected: Yes)
+- Original CRC-8: 0x42, Corrupted CRC-8: 0xEB (Detected: Yes)
+  Original Frame (first 20 bytes): 66 B9 6A 71 1A 00 8F F7 D9 C8 C9 07 2C 00 1A 15 60 BC E2 CA 
+  Corrupted Frame (first 20 bytes): 66 B9 6A 71 1A 00 8F F7 D9 C8 C9 07 2C 00 1A 15 60 BC E2 CA 
+
+**Case 2: Error detected by Checksum but NOT by CRC-8**
+- Original Checksum: 0x6D7A, Corrupted Checksum: 0x5D76 (Detected: Yes)
+- Original CRC-8: 0x5D, Corrupted CRC-8: 0x5D (Detected: No - Collision!)
+  Original Frame (first 20 bytes): 74 A1 68 72 5C 00 40 2D 8F C0 B1 42 2C 00 2E AD CB 3C 1A B7 
+  Corrupted Frame (first 20 bytes): 74 A1 68 72 5C 00 40 2D 8F C0 B1 42 2C 00 2E AD CB 3C 1A B7 
+
+**Case 3: Error detected by CRC-8 but NOT by Checksum**
+- Original Checksum: 0x0081, Corrupted Checksum: 0x0081 (Detected: No - Collision!)
+- Original CRC-8: 0x20, Corrupted CRC-8: 0xB5 (Detected: Yes)
+  Original Frame (first 20 bytes): 8E A2 94 71 CE A7 4A 10 DB 92 1C 22 2C 00 14 9F 92 D3 6D 91 
+  Corrupted Frame (first 20 bytes): 8E A2 94 71 CE A7 4A 10 DB 92 1C 22 2C 00 14 9F 92 D3 6D 91 
+

@@ -1,0 +1,10 @@
+# Compiled Binaries
+receiver
+sender
+test_eval
+*.out
+*.o
+
+#cache
+*.dSYM/
+.DS_Store
