@@ -2,6 +2,7 @@
 \usepackage[margin=0.9in,headheight=14pt]{geometry}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
+\usepackage{tabularx}
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{hyperref}
@@ -11,6 +12,7 @@
 \usepackage{fancyhdr}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{placeins}
 \usepackage{tikz}
 \usepackage{pgfplots}
 \usepackage{setspace}
@@ -31,6 +33,7 @@
     backgroundcolor=\color{codebg},
     basicstyle=\ttfamily\footnotesize,
     breaklines=true,
+    breakatwhitespace=false,
     frame=single,
     columns=fullflexible,
     keywordstyle=\color{keywordcolor}\bfseries,
@@ -98,26 +101,27 @@
 \section*{System Configuration and Environment}
 All implementations, automated test rigs, and comparative benchmark suites were developed and executed natively on macOS using modern POSIX system APIs. Table~\ref{tab:sysconfig} outlines the experimental platform.
 
-\begin{table}[htbp]
+\begin{table}[H]
 \centering
 \small
-\begin{tabular}{ll}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}p{0.34\linewidth} X@{}}
 \toprule
-\textbf{Component} & \textbf{Specification / Platform Details} \\
+Component & Specification / Platform Details \\
 \midrule
 Operating System & macOS (Darwin Kernel 24.x, Apple Silicon Architecture) \\
 Implementation Language & ISO C++17 (\texttt{g++ / clang++ -std=c++17 -Wall -Wextra -O2}) \\
 Transport \& IPC & POSIX BSD UDP Sockets (\texttt{AF\_INET}, \texttt{SOCK\_DGRAM}) \\
 High-Resolution Clocks & C++17 Monotonic Steady Clock (\texttt{std::chrono::steady\_clock}) \\
 Error Detection Engines & CRC-32 (IEEE 802.3), CRC-16, CRC-10, CRC-8, 16-Bit Checksum (RFC 1071) \\
-Link Channel Simulation & Multi-threaded FIFO Link Pipe with Serialization \& Propagation Delays \\
+Link Channel Simulation & Multi-threaded FIFO Link Pipe with Serialization \& Delay Model \\
 Automated Test Harness & Python 3.11 Subprocess Test Rig (\texttt{eval/benchmark.py}) \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \caption{System architecture and software development environment.}
 \label{tab:sysconfig}
 \end{table}
 
+\FloatBarrier
 % ==================== SECTION 1 ====================
 \section{Introduction and Problem Formulation}
 
@@ -135,6 +139,7 @@ For this assignment (CO2 of CSE/PC/B/S/314), I designed, implemented from scratc
 
 To evaluate these schemes objectively, I built a modular channel simulator capable of introducing independent, quantifiable impairments: packet loss probability ($P_{\text{loss}}$), bit error probability ($P_{\text{error}}$), reverse-channel ACK loss probability ($P_{\text{ack\_loss}}$), serialization latency ($T_{\text{tx}}$), and variable propagation delay ($T_{\text{prop}}$).
 
+\FloatBarrier
 % ==================== SECTION 2 ====================
 \section{Theoretical Principles of Flow Control and ARQ}
 
@@ -215,13 +220,14 @@ Following the assignment requirement for dynamic RTT calculation, I implemented 
 \end{align}
 In our configuration, $\text{RTO}_{\min} = 40.0\text{ ms}$ and $\text{RTO}_{\max} = 2000.0\text{ ms}$. Jacobson's algorithm operates on every valid ACK arrival, tracking dynamic link variations smoothly.
 
+\FloatBarrier
 % ==================== SECTION 3 ====================
 \section{System Architecture and Implementation}
 
 \subsection{Data Link Frame Structure}
 Following Figure 1 of the assignment specification sheet, I designed a structured binary frame layout. To ensure that the in-memory C++ structure matches the exact byte sequence transmitted across the network without compiler alignment padding, I used \texttt{\#pragma pack(push, 1)}.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \resizebox{0.95\linewidth}{!}{
 \begin{tikzpicture}[
@@ -274,34 +280,34 @@ The frame fields are structured as follows:
     \item \textbf{\texttt{length} (2 Bytes):} Unsigned 16-bit integer storing the exact payload length $L$, converted to network byte order using \texttt{htons()}.
     \item \textbf{\texttt{seq\_num} (1 Byte):} Sequence number for DATA frames, or acknowledged sequence number for ACK/NAK frames.
     \item \textbf{\texttt{type} (1 Byte):} Frame identifier: \texttt{DATA} ($0$), \texttt{ACK} ($1$), \texttt{NAK} ($2$), or \texttt{FIN} ($3$).
-    \item \textbf{\texttt{payload}:} Dynamically allocated byte array holding between $46$ and $1500$ bytes (default $64$ bytes). Control frames (\texttt{ACK}, \texttt{NAK}, \texttt{FIN}) carry $L = 0$ bytes, resulting in a minimal 20-byte wire packet.
-    \item \textbf{\texttt{fcs} (4 Bytes):} Frame Check Sequence computed over all header and payload bytes ($16 + L$ bytes) using the selected error detection algorithm (CRC-32, CRC-16, CRC-10, CRC-8, or 16-bit Checksum), stored in network byte order via \texttt{htonl()}.
+    \item \textbf{\texttt{payload}:} Dynamically allocated byte array holding between $46$ and $1500$ bytes (default $64$ bytes). Control frames carry $L = 0$ bytes, yielding minimal 20-byte wire datagrams.
+    \item \textbf{\texttt{fcs} (4 Bytes):} Frame Check Sequence computed over header and payload ($16 + L$ bytes) using selected error detection, stored via \texttt{htonl()}.
 \end{itemize}
 
 \subsection{Mapping to Required Methods (Assignment Specification)}
 Every protocol implementation is organized around the exact functional blocks specified in the assignment document:
 
-\begin{table}[htbp]
+\begin{table}[H]
 \centering
 \small
-\begin{tabular}{lll}
+\begin{tabularx}{\linewidth}{@{}>{\ttfamily\bfseries}p{0.20\linewidth} >{\ttfamily\footnotesize}p{0.36\linewidth} X@{}}
 \toprule
-\textbf{Specified Method} & \textbf{C++ Method Signature} & \textbf{Operational Functionality} \\
+\textrm{\textbf{Specified Method}} & \textrm{\textbf{C++ Method Signature}} & \textbf{Operational Functionality} \\
 \midrule
-\multicolumn{3}{l}{\textbf{Sender Program Methods}} \\
-\texttt{Framing()} & \texttt{Frame Framing(seq, data)} & Chunks file stream, encapsulates header fields, calculates FCS. \\
-\texttt{Channel()} & \texttt{ChannelAction Channel(wire, f)} & Passes wire bytes through channel simulator for impairment injection. \\
-\texttt{Send()} & \texttt{bool Send(f)} & Serializes frame, records wire metrics, enqueues to channel pipe. \\
-\texttt{Timer()} & \texttt{bool Timer(timeout\_ms)} & Checks if the active retransmission timer has expired. \\
-\texttt{Timeout()} & \texttt{void Timeout(sample\_rtt)} & Feeds $\text{SampleRTT}$ into Jacobson's algorithm to update RTO dynamically. \\
-\texttt{Recv()} & \texttt{bool Recv(ack\_frame, timeout\_ms)} & Non-blocking socket poll for incoming ACK/NAK; validates FCS. \\
+\multicolumn{3}{@{}l}{\textbf{Sender Program Methods}} \\
+Framing() & Frame Framing(seq, data) & Chunks file stream, encapsulates header fields, calculates FCS. \\
+Channel() & ChannelAction Channel(wire, f) & Passes wire bytes through channel simulator for impairment injection. \\
+Send() & bool Send(f) & Serializes frame, records wire metrics, enqueues to channel pipe. \\
+Timer() & bool Timer(timeout\_ms) & Checks if the active retransmission timer has expired. \\
+Timeout() & void Timeout(sample\_rtt) & Feeds $\text{SampleRTT}$ into Jacobson's algorithm to update RTO dynamically. \\
+Recv() & bool Recv(ack\_f, timeout\_ms) & Non-blocking socket poll for incoming ACK/NAK; validates FCS. \\
 \midrule
-\multicolumn{3}{l}{\textbf{Receiver Program Methods}} \\
-\texttt{Recv()} & \texttt{bool Recv(frame, sender\_ep, to)} & Listens on bound UDP port; deserializes incoming network bytes. \\
-\texttt{Check()} & \texttt{bool Check(frame)} & Recomputes FCS over header+payload; compares with trailer. \\
-\texttt{Send()} & \texttt{bool Send(ack\_frame, sender\_ep)} & Serializes and transmits ACK/NAK response back to sender. \\
+\multicolumn{3}{@{}l}{\textbf{Receiver Program Methods}} \\
+Recv() & bool Recv(frame, sender\_ep, to) & Listens on bound UDP port; deserializes incoming network bytes. \\
+Check() & bool Check(frame) & Recomputes FCS over header+payload; compares with trailer. \\
+Send() & bool Send(ack\_f, sender\_ep) & Serializes and transmits ACK/NAK response back to sender. \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \caption{Mapping between required assignment methods and implemented C++ class member functions.}
 \label{tab:methodmapping}
 \end{table}
@@ -320,7 +326,7 @@ To achieve true physical link pipelining, I designed \texttt{ChannelSimulator} w
 \subsection{Protocol Flow Sequence Diagrams}
 Figures~\ref{fig:seq_sw}, \ref{fig:seq_gbn}, and \ref{fig:seq_sr} illustrate the operational state transitions of the three protocols during packet loss and corruption events.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \begin{tikzpicture}[
     scale=0.78, every node/.style={transform shape},
@@ -351,7 +357,7 @@ Figures~\ref{fig:seq_sw}, \ref{fig:seq_gbn}, and \ref{fig:seq_sr} illustrate the
 \label{fig:seq_sw}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \begin{tikzpicture}[
     scale=0.78, every node/.style={transform shape},
@@ -390,7 +396,7 @@ Figures~\ref{fig:seq_sw}, \ref{fig:seq_gbn}, and \ref{fig:seq_sr} illustrate the
 \label{fig:seq_gbn}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \begin{tikzpicture}[
     scale=0.78, every node/.style={transform shape},
@@ -431,6 +437,7 @@ Figures~\ref{fig:seq_sw}, \ref{fig:seq_gbn}, and \ref{fig:seq_sr} illustrate the
 \label{fig:seq_sr}
 \end{figure}
 
+\FloatBarrier
 % ==================== SECTION 4 ====================
 \section{Implementation Details and Code Architecture}
 
@@ -490,6 +497,7 @@ while (rcv_buffer.count(rcv_base) > 0) {
 }
 \end{lstlisting}
 
+\FloatBarrier
 % ==================== SECTION 5 ====================
 \section{Empirical Evaluation and Experimental Benchmarks}
 
@@ -506,27 +514,25 @@ Each test transmitted an 844-byte text file divided into 14 frames, and every ru
     \item \textbf{Delay Variation:} Maximum one-way delay $D_{\max} \in \{0, 5, 10, 20, 30\}\text{ ms}$, with random delays uniformly distributed in $[D_{\max}/2, D_{\max}]$ (mean one-way delay $\bar{D} = 0.75 D_{\max}$).
 \end{itemize}
 
-\begin{table}[htbp]
+\begin{table}[H]
 \centering
 \small
-\resizebox{\linewidth}{!}{
-\begin{tabular}{cccccc}
+\begin{tabularx}{\linewidth}{@{}>{\centering\arraybackslash}p{0.12\linewidth} >{\centering\arraybackslash}p{0.14\linewidth} >{\centering\arraybackslash}X >{\centering\arraybackslash}X >{\centering\arraybackslash}X >{\centering\arraybackslash}p{0.14\linewidth}@{}}
 \toprule
-\textbf{Max Delay $D_{\max}$} & \textbf{Sample RTT} & \textbf{Stop-and-Wait ($T_{\text{total}}$, Tput)} & \textbf{Go-Back-N ($N=4$)} & \textbf{Selective Repeat ($N=4$)} & \textbf{Pipelining Speedup} \\
+\textbf{Max Delay} & \textbf{Sample RTT} & \textbf{Stop-and-Wait} & \textbf{Go-Back-N ($N=4$)} & \textbf{Selective Repeat} & \textbf{Pipelining Speedup} \\
 \midrule
-0 ms  & 0.14 ms & 1.83 ms (3697.6 kbps)  & 0.67 ms (10106.5 kbps) & 0.72 ms (9338.9 kbps) & $2.73\times$ \\
-5 ms  & 6.06 ms & 91.77 ms (73.6 kbps)   & 30.06 ms (224.6 kbps)  & 32.48 ms (207.9 kbps) & $3.05\times$ \\
+0 ms  & 0.14 ms  & 1.83 ms (3697.6 kbps) & 0.67 ms (10106.5 kbps) & 0.72 ms (9338.9 kbps) & $2.73\times$ \\
+5 ms  & 6.06 ms  & 91.77 ms (73.6 kbps)  & 30.06 ms (224.6 kbps)  & 32.48 ms (207.9 kbps) & $3.05\times$ \\
 10 ms & 10.38 ms & 156.23 ms (43.2 kbps) & 55.54 ms (121.6 kbps)  & 53.96 ms (125.1 kbps) & $2.89\times$ \\
 20 ms & 17.79 ms & 248.00 ms (27.2 kbps) & 202.51 ms (33.3 kbps)  & 95.56 ms (70.7 kbps)  & $2.60\times$ \\
 30 ms & 26.88 ms & 397.30 ms (17.0 kbps) & 157.79 ms (42.8 kbps)  & 124.38 ms (54.3 kbps) & $3.19\times$ \\
 \bottomrule
-\end{tabular}
-}
+\end{tabularx}
 \caption{Empirical evaluation of Round-Trip Time (RTT) and total transfer latency across varying channel delays. All runs confirmed 100\% binary integrity.}
 \label{tab:case1}
 \end{table}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \begin{tikzpicture}
 \begin{axis}[
@@ -562,6 +568,7 @@ Each test transmitted an 844-byte text file divided into 14 frames, and every ru
     \item \textbf{Dynamic RTO Scaling:} As propagation delay grows to $30\text{ ms}$, measured RTTs exceed $26\text{ ms}$. Jacobson's algorithm automatically adapts, lifting the RTO above the $40\text{ ms}$ baseline floor to $49.1\text{ ms}$ (Stop-and-Wait) and $52.7\text{ ms}$ (Go-Back-N), preventing false timeouts.
 \end{enumerate}
 
+\FloatBarrier
 \subsection{Test Case 2: Protocol Efficiency Without Error or Loss (Window Scaling)}
 \textbf{Assignment Requirement:} \textit{``Compare efficiency of the above approaches without error or lost frame.''}
 
@@ -573,27 +580,25 @@ Each test transmitted an 844-byte text file divided into 14 frames, and every ru
     \item \textbf{Link Utilization Efficiency ($\eta_{\text{link}}$):} Defined as $\frac{M \cdot T_{\text{tx}}}{T_{\text{elapsed}}} = \frac{14 \times 0.8\text{ ms}}{T_{\text{elapsed}}}$.
 \end{itemize}
 
-\begin{table}[htbp]
+\begin{table}[H]
 \centering
 \small
-\resizebox{\linewidth}{!}{
-\begin{tabular}{ccccc}
+\begin{tabularx}{\linewidth}{@{}>{\centering\arraybackslash}p{0.14\linewidth} >{\centering\arraybackslash}X >{\centering\arraybackslash}X >{\centering\arraybackslash}X >{\centering\arraybackslash}p{0.16\linewidth}@{}}
 \toprule
 \textbf{Window $N$} & \textbf{Stop-and-Wait ($\eta_{\text{link}}$, Tput)} & \textbf{Go-Back-N ($\eta_{\text{link}}$, Tput)} & \textbf{Selective Repeat ($\eta_{\text{link}}$, Tput)} & \textbf{Throughput Speedup} \\
 \midrule
 $N=1$  & 157.12 ms (7.13\%, 43.0 kbps) & 160.95 ms (6.96\%, 42.0 kbps) & 168.12 ms (6.66\%, 40.2 kbps) & $1.00\times$ (Baseline) \\
-$N=2$  & --- & 80.92 ms (13.84\%, 83.4 kbps) & 75.73 ms (14.79\%, 89.2 kbps)  & $2.07\times$ \\
-$N=4$  & --- & 50.27 ms (22.28\%, 134.3 kbps) & 55.68 ms (20.11\%, 121.3 kbps) & $3.12\times$ \\
-$N=8$  & --- & 36.60 ms (30.60\%, 184.5 kbps) & 36.36 ms (30.80\%, 185.7 kbps) & $4.32\times$ \\
-$N=16$ & --- & 33.34 ms (33.59\%, 202.5 kbps) & 30.19 ms (37.10\%, 223.6 kbps) & \textbf{5.20$\times$} \\
+$N=2$  & ---                           & 80.92 ms (13.84\%, 83.4 kbps) & 75.73 ms (14.79\%, 89.2 kbps)  & $2.07\times$ \\
+$N=4$  & ---                           & 50.27 ms (22.28\%, 134.3 kbps)& 55.68 ms (20.11\%, 121.3 kbps) & $3.12\times$ \\
+$N=8$  & ---                           & 36.60 ms (30.60\%, 184.5 kbps)& 36.36 ms (30.80\%, 185.7 kbps) & $4.32\times$ \\
+$N=16$ & ---                           & 33.34 ms (33.59\%, 202.5 kbps)& 30.19 ms (37.10\%, 223.6 kbps) & \textbf{5.20$\times$} \\
 \bottomrule
-\end{tabular}
-}
+\end{tabularx}
 \caption{Lossless window size scaling benchmark ($D_{\max} = 10\text{ ms}$). Zero retransmissions occurred across all runs.}
 \label{tab:case2}
 \end{table}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \begin{tikzpicture}
 \begin{axis}[
@@ -628,6 +633,7 @@ $N=16$ & --- & 33.34 ms (33.59\%, 202.5 kbps) & 30.19 ms (37.10\%, 223.6 kbps) &
     \item \textbf{Sublinear Saturation:} Link utilization increases quasi-linearly from $N=1$ ($7.13\%$) to $N=2$ ($14.79\%$) and $N=4$ ($22.28\%$). Beyond $N=8$, efficiency gains flatten as the entire 14-frame message fits into a single window burst ($N=16$, $37.10\%$, a \textbf{$5.20\times$ speedup}).
 \end{enumerate}
 
+\FloatBarrier
 \subsection{Test Case 3: Efficiency Under Channel Error, Loss, and Delay ($P \in [0.1, 0.5]$)}
 \textbf{Assignment Requirement:} \textit{``Compare efficiency of the above approaches for different probability (0.1 - 0.5) of an error or delay in the transmission of a packet or in its acknowledgment.''}
 
@@ -641,13 +647,12 @@ To evaluate this requirement systematically, I tested the three canonical impair
 % ---------- SUBCASE 3A ----------
 \subsubsection{Subcase 3A: Data Packet Loss ($P_{\text{loss}} \in [0.1, 0.5]$)}
 
-\begin{table}[htbp]
+\begin{table}[H]
 \centering
 \small
-\resizebox{\linewidth}{!}{
-\begin{tabular}{ccccc}
+\begin{tabularx}{\linewidth}{@{}>{\centering\arraybackslash}p{0.12\linewidth} >{\centering\arraybackslash}X >{\centering\arraybackslash}X >{\centering\arraybackslash}X >{\centering\arraybackslash}p{0.24\linewidth}@{}}
 \toprule
-\textbf{Loss Prob $P_{\text{loss}}$} & \textbf{Stop-and-Wait (Retx, $\eta_{\text{bw}}$)} & \textbf{Go-Back-N ($N=4$) (Retx, $\eta_{\text{bw}}$)} & \textbf{Selective Repeat ($N=4$) (Retx, $\eta_{\text{bw}}$)} & \textbf{SR vs GBN Advantage} \\
+\textbf{Loss Prob $P_{\text{loss}}$} & \textbf{Stop-and-Wait (Retx, $\eta_{\text{bw}}$)} & \textbf{Go-Back-N ($N=4$)} & \textbf{Selective Repeat ($N=4$)} & \textbf{SR vs GBN Advantage} \\
 \midrule
 0.1 & 1 retx (68.73\%, 50.6 kbps)  & 0 retx (73.78\%, 210.3 kbps)  & 4 retx (57.03\%, 43.8 kbps)  & Pipelined baseline \\
 0.2 & 2 retx (64.33\%, 39.9 kbps)  & 16 retx (33.92\%, 10.4 kbps)  & 4 retx (60.46\%, 12.6 kbps)  & GBN rollback begins \\
@@ -655,13 +660,12 @@ To evaluate this requirement systematically, I tested the three canonical impair
 0.4 & 12 retx (39.22\%, 3.4 kbps)  & 33 retx (22.45\%, 0.8 kbps)   & 8 retx (47.85\%, 12.1 kbps)  & SR $15\times$ higher throughput \\
 0.5 & 25 retx (26.02\%, 0.3 kbps)  & \textbf{80 retx} (11.41\%, 0.2 kbps) & \textbf{20 retx} (29.80\%, 0.4 kbps) & \textbf{SR $2.6\times$ higher $\eta_{\text{bw}}$} \\
 \bottomrule
-\end{tabular}
-}
+\end{tabularx}
 \caption{Empirical results for Subcase 3A: Data Packet Loss ($P_{\text{loss}} \in [0.1, 0.5]$).}
 \label{tab:case3a}
 \end{table}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \begin{tikzpicture}
 \begin{axis}[
@@ -698,11 +702,10 @@ In contrast, Selective Repeat buffers out-of-order frames, requiring only \textb
 % ---------- SUBCASE 3B ----------
 \subsubsection{Subcase 3B: Bit Error and Selective NAK Fast Recovery ($P_{\text{error}} \in [0.1, 0.5]$)}
 
-\begin{table}[htbp]
+\begin{table}[H]
 \centering
 \small
-\resizebox{\linewidth}{!}{
-\begin{tabular}{ccccc}
+\begin{tabularx}{\linewidth}{@{}>{\centering\arraybackslash}p{0.12\linewidth} >{\centering\arraybackslash}X >{\centering\arraybackslash}X >{\centering\arraybackslash}X >{\centering\arraybackslash}p{0.20\linewidth}@{}}
 \toprule
 \textbf{Error Prob $P_{\text{error}}$} & \textbf{Stop-and-Wait (Retx, TO, Tput)} & \textbf{Go-Back-N (Retx, TO, Tput)} & \textbf{Selective Repeat (Retx, NAK, TO, Tput)} & \textbf{SR NAK Advantage} \\
 \midrule
@@ -712,8 +715,7 @@ In contrast, Selective Repeat buffers out-of-order frames, requiring only \textb
 0.4 & 10 retx (10 TO, 0.8 kbps) & 49 retx (15 TO, 0.3 kbps) & 7 retx (7 NAK, \textbf{0 TO}, \textbf{104.3 kbps}) & $>130\times$ faster \\
 0.5 & 15 retx (15 TO, 1.2 kbps) & 50 retx (14 TO, 0.4 kbps) & 9 retx (9 NAK, \textbf{0 TO}, \textbf{115.3 kbps}) & \textbf{$>280\times$ faster} \\
 \bottomrule
-\end{tabular}
-}
+\end{tabularx}
 \caption{Empirical results for Subcase 3B: Bit Error and Selective NAK Recovery ($P_{\text{error}} \in [0.1, 0.5]$). SR experienced zero timeouts.}
 \label{tab:case3b}
 \end{table}
@@ -726,13 +728,12 @@ In \textbf{Selective Repeat}, the receiver detects the CRC failure and immediate
 % ---------- SUBCASE 3C ----------
 \subsubsection{Subcase 3C: Reverse Channel ACK Loss ($P_{\text{ack\_loss}} \in [0.1, 0.5]$)}
 
-\begin{table}[htbp]
+\begin{table}[H]
 \centering
 \small
-\resizebox{\linewidth}{!}{
-\begin{tabular}{ccccc}
+\begin{tabularx}{\linewidth}{@{}>{\centering\arraybackslash}p{0.14\linewidth} >{\centering\arraybackslash}X >{\centering\arraybackslash}X >{\centering\arraybackslash}X >{\centering\arraybackslash}p{0.25\linewidth}@{}}
 \toprule
-\textbf{ACK Loss Prob $P_{\text{ack\_loss}}$} & \textbf{Stop-and-Wait (Retx, TO)} & \textbf{Go-Back-N (Retx, TO)} & \textbf{Selective Repeat (Retx, TO)} & \textbf{Bandwidth Eff. $\eta_{\text{bw}}$ (SW / GBN / SR)} \\
+\textbf{ACK Loss $P_{\text{ack\_loss}}$} & \textbf{Stop-and-Wait (Retx, TO)} & \textbf{Go-Back-N (Retx, TO)} & \textbf{Selective Repeat (Retx, TO)} & \textbf{Bandwidth Eff. $\eta_{\text{bw}}$ (SW / GBN / SR)} \\
 \midrule
 0.1 & 1 retx (1 TO)   & \textbf{0 retx (0 TO)} & 2 retx (2 TO)   & 68.73\% / \textbf{73.78\%} / 64.33\% \\
 0.2 & 11 retx (11 TO) & \textbf{0 retx (0 TO)} & 1 retx (1 TO)   & 42.97\% / \textbf{73.78\%} / 71.77\% \\
@@ -740,13 +741,12 @@ In \textbf{Selective Repeat}, the receiver detects the CRC failure and immediate
 0.4 & 16 retx (16 TO) & \textbf{2 retx (1 TO)} & 15 retx (15 TO) & 33.55\% / \textbf{62.99\%} / 34.70\% \\
 0.5 & 6 retx (6 TO)   & \textbf{4 retx (1 TO)} & 22 retx (22 TO) & 51.21\% / \textbf{54.10\%} / 31.78\% \\
 \bottomrule
-\end{tabular}
-}
+\end{tabularx}
 \caption{Empirical results for Subcase 3C: Reverse Channel ACK Loss ($P_{\text{ack\_loss}} \in [0.1, 0.5]$).}
 \label{tab:case3c}
 \end{table}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \begin{tikzpicture}
 \begin{axis}[
@@ -783,34 +783,33 @@ Subcase 3C demonstrates a notable theoretical insight: \textbf{under reverse cha
     \item \textbf{Selective Repeat Weakness:} SR uses \textbf{Independent Acknowledgements}. Losing ACK 0 cannot be resolved by receiving ACK 1; frame 0's individual timer must expire, forcing an unnecessary retransmission (22 retransmissions at $50\%$ ACK loss).
 \end{itemize}
 
+\FloatBarrier
 % ==================== SECTION 6 ====================
 \section{Comparative Protocol Synthesis and Decision Matrix}
 
 Table~\ref{tab:comparison_matrix} synthesizes the key tradeoffs between the three protocols across computational complexity, memory overhead, and resilience to link impairments.
 
-\begin{table}[htbp]
+\begin{table}[H]
 \centering
 \small
-\resizebox{\linewidth}{!}{
-\begin{tabular}{lccc}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\bfseries}p{0.28\linewidth} >{\centering\arraybackslash}X >{\centering\arraybackslash}X >{\centering\arraybackslash}X@{}}
 \toprule
-\textbf{Metric / Attribute} & \textbf{Stop-and-Wait ARQ} & \textbf{Go-Back-N ARQ} & \textbf{Selective Repeat ARQ} \\
+Metric / Attribute & Stop-and-Wait ARQ & Go-Back-N ARQ & Selective Repeat ARQ \\
 \midrule
 Sender Window Size ($W_s$) & 1 & $N$ & $N$ \\
 Receiver Window Size ($W_r$) & 1 & 1 & $N$ \\
-Seq. Number Space Constraint & $2^k \ge 2$ ($k=1$ bit) & $N \le 2^k - 1$ & $2N \le 2^k \implies N \le 2^{k-1}$ \\
-Acknowledgement Type & Independent ACK & Cumulative ACK & Independent ACK + Selective NAK \\
+Seq. Number Space & $2^k \ge 2$ ($k=1$ bit) & $N \le 2^k - 1$ & $2N \le 2^k \implies N \le 2^{k-1}$ \\
+Acknowledgement Type & Independent ACK & Cumulative ACK & Indep. ACK + Selective NAK \\
 Receiver Memory Buffering & Zero (1 frame buffer) & Zero (in-order delivery only) & Active buffer array of $N$ frames \\
 Receiver Logic Complexity & Minimal & Minimal & High (Sorting, Hole tracking) \\
 Sender Timer Management & 1 Timer & 1 Timer (Base Frame) & $N$ Timers (Per-frame tracking) \\
-Throughput on Lossless Links & Collapses with high delay $a$ & High ($N \ge 1 + 2a$) & High ($N \ge 1 + 2a$) \\
-Forward Packet Loss Resilience & Low (idle timeouts) & Poor ($N$-frame rollback penalty) & \textbf{Superior (isolated single retx)} \\
+Lossless Throughput & Collapses with delay $a$ & High ($N \ge 1 + 2a$) & High ($N \ge 1 + 2a$) \\
+Forward Packet Loss Resilience & Low (idle timeouts) & Poor ($N$-frame rollback) & \textbf{Superior (isolated single retx)} \\
 Forward Bit Corruption Resilience & Poor (idle timeouts) & Poor (idle timeouts) & \textbf{Superior ($0$ timeouts, fast NAK)} \\
-Reverse ACK Loss Resilience & Poor (duplicate timeouts) & \textbf{Superior (healed by Cumul. ACK)} & Moderate (individual timers expire) \\
+Reverse ACK Loss Resilience & Poor (duplicate timeouts) & \textbf{Superior (Cumul. ACK)} & Moderate (individual timers expire) \\
 Ideal Real-World Use Case & Simple embedded sensors & Asymmetric broadcast channels & High-speed, noisy satellite/WAN \\
 \bottomrule
-\end{tabular}
-}
+\end{tabularx}
 \caption{Comprehensive comparative synthesis of Flow Control Protocol mechanisms.}
 \label{tab:comparison_matrix}
 \end{table}
@@ -822,6 +821,7 @@ Ideal Real-World Use Case & Simple embedded sensors & Asymmetric broadcast chann
     \item \textbf{Selective Repeat:} Essential for high bandwidth-delay product links with noisy forward channels ($P_{\text{loss}}, P_{\text{error}} \ge 0.1$), where retransmitting entire sliding windows causes catastrophic bandwidth collapse.
 \end{enumerate}
 
+\FloatBarrier
 % ==================== SECTION 7 ====================
 \section{Verification, Edge Cases, and Terminal Traces}
 
@@ -852,6 +852,7 @@ Below is an excerpt from the live terminal trace during a Selective Repeat sessi
 [SR RECEIVER DELIVER] In-Order Frames [4, 5] written to file.
 \end{lstlisting}
 
+\FloatBarrier
 % ==================== SECTION 8 ====================
 \section{Practical Limitations and Future Enhancements}
 
@@ -862,6 +863,7 @@ While the simulation rigorously implements Data Link Layer flow control, several
     \item \textbf{Dynamic Window Sizing (Congestion Control):} In our implementation, window size $N$ is fixed. Extending the sender with Van Jacobson's congestion control algorithms (Slow Start, Congestion Avoidance, AIMD) would allow dynamic window adaptation based on network capacity.
 \end{enumerate}
 
+\FloatBarrier
 % ==================== SECTION 9 ====================
 \section{Conclusion}
 
@@ -876,6 +878,7 @@ My empirical findings confirm the theoretical models:
     \item \textbf{Cumulative ACK Resilience:} Under reverse ACK loss, Go-Back-N outperforms both Stop-and-Wait and Selective Repeat, experiencing zero retransmissions at up to $20\%$ ACK drop rates.
 \end{enumerate}
 
+\FloatBarrier
 % ==================== SECTION 10 ====================
 \section{Sources and References}
 \begin{enumerate}
