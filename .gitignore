@@ -18,3 +18,7 @@ server
 simulator
 station
 test_suite
+
+# Editor / IDE configuration
+.vscode/
+.idea/
