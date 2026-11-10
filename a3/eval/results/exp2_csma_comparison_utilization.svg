@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500" style="background-color:#ffffff; font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif;">
+<rect width="800" height="500" fill="#ffffff"/>
+<text x="400.0" y="35" text-anchor="middle" font-size="18" font-weight="bold" fill="#111827">CSMA Schemes: Channel Air Utilization vs Contending Stations (N)</text>
+<rect x="90" y="60" width="530" height="370" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1"/>
+<line x1="90" y1="430.0" x2="620" y2="430.0" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="78" y="434.0" text-anchor="end" font-size="11" fill="#4b5563">0.0</text>
+<line x1="90" y1="356.0" x2="620" y2="356.0" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="78" y="360.0" text-anchor="end" font-size="11" fill="#4b5563">16.6</text>
+<line x1="90" y1="282.0" x2="620" y2="282.0" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="78" y="286.0" text-anchor="end" font-size="11" fill="#4b5563">33.2</text>
+<line x1="90" y1="208.0" x2="620" y2="208.0" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="78" y="212.0" text-anchor="end" font-size="11" fill="#4b5563">49.9</text>
+<line x1="90" y1="133.99999999999994" x2="620" y2="133.99999999999994" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="78" y="137.99999999999994" text-anchor="end" font-size="11" fill="#4b5563">66.5</text>
+<line x1="90" y1="60.0" x2="620" y2="60.0" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="78" y="64.0" text-anchor="end" font-size="11" fill="#4b5563">83.1</text>
+<line x1="90.0" y1="60" x2="90.0" y2="430" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="90.0" y="450" text-anchor="middle" font-size="11" fill="#4b5563">1.00</text>
+<line x1="178.33333333333331" y1="60" x2="178.33333333333331" y2="430" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="178.33333333333331" y="450" text-anchor="middle" font-size="11" fill="#4b5563">5.83</text>
+<line x1="266.66666666666663" y1="60" x2="266.66666666666663" y2="430" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="266.66666666666663" y="450" text-anchor="middle" font-size="11" fill="#4b5563">10.67</text>
+<line x1="355.0" y1="60" x2="355.0" y2="430" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="355.0" y="450" text-anchor="middle" font-size="11" fill="#4b5563">15.50</text>
+<line x1="443.3333333333333" y1="60" x2="443.3333333333333" y2="430" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="443.3333333333333" y="450" text-anchor="middle" font-size="11" fill="#4b5563">20.33</text>
+<line x1="531.6666666666667" y1="60" x2="531.6666666666667" y2="430" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="531.6666666666667" y="450" text-anchor="middle" font-size="11" fill="#4b5563">25.17</text>
+<line x1="620.0" y1="60" x2="620.0" y2="430" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="620.0" y="450" text-anchor="middle" font-size="11" fill="#4b5563">30.00</text>
+<text x="355.0" y="480" text-anchor="middle" font-size="13" font-weight="600" fill="#374151">Number of Contending Stations (N)</text>
+<text x="25" y="245.0" text-anchor="middle" font-size="13" font-weight="600" fill="#374151" transform="rotate(-90 25 245.0)">Channel Air Utilization (%)</text>
+<polyline fill="none" stroke="#1f77b4" stroke-width="2.5" points="90.0,133.0 108.3,174.8 144.8,227.5 181.4,295.4 217.9,318.2 254.5,284.1 345.9,293.5 437.2,304.1 528.6,291.4 620.0,297.5" stroke-linejoin="round"/>
+<circle cx="90.0" cy="133.0" r="4" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="108.3" cy="174.8" r="4" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="144.8" cy="227.5" r="4" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="181.4" cy="295.4" r="4" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="217.9" cy="318.2" r="4" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="254.5" cy="284.1" r="4" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="345.9" cy="293.5" r="4" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="437.2" cy="304.1" r="4" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="528.6" cy="291.4" r="4" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="620.0" cy="297.5" r="4" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<line x1="645" y1="70" x2="665" y2="70" stroke="#1f77b4" stroke-width="2.5"/>
+<circle cx="655" cy="70" r="3.5" fill="#1f77b4"/>
+<text x="673" y="74" font-size="11" font-weight="500" fill="#1f2937">Non-Persistent CSMA</text>
+<polyline fill="none" stroke="#ff7f0e" stroke-width="2.5" points="90.0,132.7 108.3,93.6 144.8,192.9 181.4,243.1 217.9,275.0 254.5,283.9 345.9,246.1 437.2,247.6 528.6,234.1 620.0,251.8" stroke-linejoin="round"/>
+<circle cx="90.0" cy="132.7" r="4" fill="#ff7f0e" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="108.3" cy="93.6" r="4" fill="#ff7f0e" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="144.8" cy="192.9" r="4" fill="#ff7f0e" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="181.4" cy="243.1" r="4" fill="#ff7f0e" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="217.9" cy="275.0" r="4" fill="#ff7f0e" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="254.5" cy="283.9" r="4" fill="#ff7f0e" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="345.9" cy="246.1" r="4" fill="#ff7f0e" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="437.2" cy="247.6" r="4" fill="#ff7f0e" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="528.6" cy="234.1" r="4" fill="#ff7f0e" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="620.0" cy="251.8" r="4" fill="#ff7f0e" stroke="#ffffff" stroke-width="1.5"/>
+<line x1="645" y1="94" x2="665" y2="94" stroke="#ff7f0e" stroke-width="2.5"/>
+<circle cx="655" cy="94" r="3.5" fill="#ff7f0e"/>
+<text x="673" y="98" font-size="11" font-weight="500" fill="#1f2937">1-Persistent CSMA</text>
+<polyline fill="none" stroke="#2ca02c" stroke-width="2.5" points="90.0,307.9 108.3,280.2 144.8,234.0 181.4,226.7 217.9,217.2 254.5,243.4 345.9,272.2 437.2,275.7 528.6,297.0 620.0,286.5" stroke-linejoin="round"/>
+<circle cx="90.0" cy="307.9" r="4" fill="#2ca02c" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="108.3" cy="280.2" r="4" fill="#2ca02c" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="144.8" cy="234.0" r="4" fill="#2ca02c" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="181.4" cy="226.7" r="4" fill="#2ca02c" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="217.9" cy="217.2" r="4" fill="#2ca02c" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="254.5" cy="243.4" r="4" fill="#2ca02c" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="345.9" cy="272.2" r="4" fill="#2ca02c" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="437.2" cy="275.7" r="4" fill="#2ca02c" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="528.6" cy="297.0" r="4" fill="#2ca02c" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="620.0" cy="286.5" r="4" fill="#2ca02c" stroke="#ffffff" stroke-width="1.5"/>
+<line x1="645" y1="118" x2="665" y2="118" stroke="#2ca02c" stroke-width="2.5"/>
+<circle cx="655" cy="118" r="3.5" fill="#2ca02c"/>
+<text x="673" y="122" font-size="11" font-weight="500" fill="#1f2937">p-Persistent CSMA (p=0.1)</text>
+<polyline fill="none" stroke="#d62728" stroke-width="2.5" points="90.0,126.7 108.3,208.9 144.8,231.0 181.4,219.3 217.9,249.9 254.5,236.3 345.9,286.1 437.2,240.3 528.6,251.3 620.0,252.3" stroke-linejoin="round"/>
+<circle cx="90.0" cy="126.7" r="4" fill="#d62728" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="108.3" cy="208.9" r="4" fill="#d62728" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="144.8" cy="231.0" r="4" fill="#d62728" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="181.4" cy="219.3" r="4" fill="#d62728" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="217.9" cy="249.9" r="4" fill="#d62728" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="254.5" cy="236.3" r="4" fill="#d62728" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="345.9" cy="286.1" r="4" fill="#d62728" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="437.2" cy="240.3" r="4" fill="#d62728" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="528.6" cy="251.3" r="4" fill="#d62728" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="620.0" cy="252.3" r="4" fill="#d62728" stroke="#ffffff" stroke-width="1.5"/>
+<line x1="645" y1="142" x2="665" y2="142" stroke="#d62728" stroke-width="2.5"/>
+<circle cx="655" cy="142" r="3.5" fill="#d62728"/>
+<text x="673" y="146" font-size="11" font-weight="500" fill="#1f2937">p-Persistent CSMA (Best p=1/N)</text>
+<polyline fill="none" stroke="#9467bd" stroke-width="2.5" points="90.0,151.5 108.3,94.1 144.8,183.4 181.4,241.1 217.9,291.1 254.5,275.3 345.9,219.7 437.2,235.3 528.6,220.8 620.0,198.7" stroke-linejoin="round"/>
+<circle cx="90.0" cy="151.5" r="4" fill="#9467bd" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="108.3" cy="94.1" r="4" fill="#9467bd" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="144.8" cy="183.4" r="4" fill="#9467bd" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="181.4" cy="241.1" r="4" fill="#9467bd" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="217.9" cy="291.1" r="4" fill="#9467bd" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="254.5" cy="275.3" r="4" fill="#9467bd" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="345.9" cy="219.7" r="4" fill="#9467bd" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="437.2" cy="235.3" r="4" fill="#9467bd" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="528.6" cy="220.8" r="4" fill="#9467bd" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="620.0" cy="198.7" r="4" fill="#9467bd" stroke="#ffffff" stroke-width="1.5"/>
+<line x1="645" y1="166" x2="665" y2="166" stroke="#9467bd" stroke-width="2.5"/>
+<circle cx="655" cy="166" r="3.5" fill="#9467bd"/>
+<text x="673" y="170" font-size="11" font-weight="500" fill="#1f2937">CSMA/CD</text>
+</svg>

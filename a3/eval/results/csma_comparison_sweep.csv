@@ -1,0 +1,51 @@
+ProtocolKey,ProtocolName,Stations,Collisions,AvgDelayMs,ThroughputKbps,ChannelUtilizationPct,TxEfficiencyPct,SuccessRatePct
+np,Non-Persistent CSMA,1,0.0,6.23,68.33,66.71,100.00,100.00
+np,Non-Persistent CSMA,2,8.0,14.34,58.70,57.32,71.43,100.00
+np,Non-Persistent CSMA,4,45.0,35.00,46.56,45.47,47.37,100.00
+np,Non-Persistent CSMA,6,82.7,61.61,30.95,30.22,43.42,100.00
+np,Non-Persistent CSMA,8,146.3,93.04,25.71,25.10,35.37,100.00
+np,Non-Persistent CSMA,10,160.7,93.55,33.55,32.77,38.53,100.00
+np,Non-Persistent CSMA,15,317.3,158.72,31.39,30.66,32.12,100.00
+np,Non-Persistent CSMA,20,442.3,206.98,28.95,28.27,31.22,100.00
+np,Non-Persistent CSMA,25,576.3,250.81,31.88,31.13,30.39,100.00
+np,Non-Persistent CSMA,30,792.3,292.73,30.48,29.76,27.42,99.56
+1p,1-Persistent CSMA,1,0.0,6.22,68.39,66.76,100.00,100.00
+1p,1-Persistent CSMA,2,4.0,11.72,77.37,75.54,83.72,100.00
+1p,1-Persistent CSMA,4,35.7,27.03,54.53,53.24,53.05,100.00
+1p,1-Persistent CSMA,6,75.0,43.55,42.99,41.97,44.58,100.00
+1p,1-Persistent CSMA,8,98.3,62.48,35.64,34.80,44.89,100.00
+1p,1-Persistent CSMA,10,131.3,75.18,33.60,32.81,43.45,100.00
+1p,1-Persistent CSMA,15,204.0,100.53,42.31,41.31,42.45,100.00
+1p,1-Persistent CSMA,20,318.7,141.32,41.96,40.97,38.58,100.00
+1p,1-Persistent CSMA,25,376.7,156.32,45.07,44.00,39.91,99.87
+1p,1-Persistent CSMA,30,504.7,196.88,40.98,40.01,37.40,99.89
+pp,p-Persistent CSMA (p=0.1),1,0.0,17.11,28.08,27.42,100.00,100.00
+pp,p-Persistent CSMA (p=0.1),2,3.3,24.18,34.45,33.64,86.75,100.00
+pp,p-Persistent CSMA (p=0.1),4,7.7,37.80,45.09,44.02,84.02,100.00
+pp,p-Persistent CSMA (p=0.1),6,32.0,52.81,46.75,45.65,65.43,100.00
+pp,p-Persistent CSMA (p=0.1),8,56.7,66.35,48.93,47.78,59.79,100.00
+pp,p-Persistent CSMA (p=0.1),10,127.3,102.52,42.92,41.91,44.18,100.00
+pp,p-Persistent CSMA (p=0.1),15,252.3,157.98,36.28,35.43,37.29,100.00
+pp,p-Persistent CSMA (p=0.1),20,395.3,212.58,35.49,34.66,33.72,100.00
+pp,p-Persistent CSMA (p=0.1),25,604.0,274.81,30.60,29.88,29.34,100.00
+pp,p-Persistent CSMA (p=0.1),30,788.7,342.43,32.99,32.22,27.53,99.89
+pp_best,p-Persistent CSMA (Best p=1/N),1,0.0,6.09,69.76,68.11,100.00,100.00
+pp_best,p-Persistent CSMA (Best p=1/N),2,13.3,17.67,50.87,49.66,60.96,100.00
+pp_best,p-Persistent CSMA (Best p=1/N),4,34.7,35.42,45.76,44.68,53.96,100.00
+pp_best,p-Persistent CSMA (Best p=1/N),6,51.0,51.26,48.45,47.31,54.21,100.00
+pp_best,p-Persistent CSMA (Best p=1/N),8,100.0,79.32,41.41,40.44,44.47,100.00
+pp_best,p-Persistent CSMA (Best p=1/N),10,116.3,95.74,44.54,43.49,46.84,100.00
+pp_best,p-Persistent CSMA (Best p=1/N),15,177.7,147.87,33.08,32.31,46.18,100.00
+pp_best,p-Persistent CSMA (Best p=1/N),20,215.7,184.15,43.63,42.60,48.72,100.00
+pp_best,p-Persistent CSMA (Best p=1/N),25,302.3,245.05,41.11,40.14,45.28,100.00
+pp_best,p-Persistent CSMA (Best p=1/N),30,340.7,289.60,40.87,39.90,46.85,100.00
+cd,CSMA/CD,1,0.0,6.73,64.07,62.55,100.00,100.00
+cd,CSMA/CD,2,2.7,11.69,77.26,75.43,88.38,100.00
+cd,CSMA/CD,4,33.0,21.82,56.72,55.38,54.97,100.00
+cd,CSMA/CD,6,63.3,35.80,43.44,42.42,48.83,100.00
+cd,CSMA/CD,8,77.7,51.07,31.95,31.20,50.74,100.00
+cd,CSMA/CD,10,128.7,60.73,35.59,34.75,44.07,100.00
+cd,CSMA/CD,15,180.3,73.71,48.38,47.24,45.51,100.00
+cd,CSMA/CD,20,269.0,106.47,44.78,43.73,42.67,100.00
+cd,CSMA/CD,25,364.3,125.94,48.11,46.99,40.87,100.00
+cd,CSMA/CD,30,453.7,145.80,53.19,51.94,39.92,100.00

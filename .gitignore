@@ -8,3 +8,13 @@ test_eval
 #cache
 *.dSYM/
 .DS_Store
+
+# Large trace files (>100MB rejected by GitHub)
+*.pcapng
+*.pcap
+
+# Build artifacts
+server
+simulator
+station
+test_suite

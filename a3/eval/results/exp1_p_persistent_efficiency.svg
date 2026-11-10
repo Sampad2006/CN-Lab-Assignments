@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500" style="background-color:#ffffff; font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif;">
+<rect width="800" height="500" fill="#ffffff"/>
+<text x="400.0" y="35" text-anchor="middle" font-size="18" font-weight="bold" fill="#111827">p-Persistent CSMA: Protocol Tx Efficiency vs Probability p (N=5)</text>
+<rect x="90" y="60" width="530" height="370" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1"/>
+<line x1="90" y1="430.0" x2="620" y2="430.0" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="78" y="434.0" text-anchor="end" font-size="11" fill="#4b5563">0.0</text>
+<line x1="90" y1="356.0" x2="620" y2="356.0" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="78" y="360.0" text-anchor="end" font-size="11" fill="#4b5563">21.5</text>
+<line x1="90" y1="282.0" x2="620" y2="282.0" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="78" y="286.0" text-anchor="end" font-size="11" fill="#4b5563">42.9</text>
+<line x1="90" y1="208.0" x2="620" y2="208.0" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="78" y="212.0" text-anchor="end" font-size="11" fill="#4b5563">64.4</text>
+<line x1="90" y1="134.0" x2="620" y2="134.0" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="78" y="138.0" text-anchor="end" font-size="11" fill="#4b5563">85.8</text>
+<line x1="90" y1="60.0" x2="620" y2="60.0" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="78" y="64.0" text-anchor="end" font-size="11" fill="#4b5563">107.3</text>
+<line x1="90.0" y1="60" x2="90.0" y2="430" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="90.0" y="450" text-anchor="middle" font-size="11" fill="#4b5563">0.01</text>
+<line x1="178.33333333333331" y1="60" x2="178.33333333333331" y2="430" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="178.33333333333331" y="450" text-anchor="middle" font-size="11" fill="#4b5563">0.17</text>
+<line x1="266.66666666666663" y1="60" x2="266.66666666666663" y2="430" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="266.66666666666663" y="450" text-anchor="middle" font-size="11" fill="#4b5563">0.34</text>
+<line x1="355.0" y1="60" x2="355.0" y2="430" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="355.0" y="450" text-anchor="middle" font-size="11" fill="#4b5563">0.51</text>
+<line x1="443.3333333333333" y1="60" x2="443.3333333333333" y2="430" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="443.3333333333333" y="450" text-anchor="middle" font-size="11" fill="#4b5563">0.67</text>
+<line x1="531.6666666666667" y1="60" x2="531.6666666666667" y2="430" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="531.6666666666667" y="450" text-anchor="middle" font-size="11" fill="#4b5563">0.84</text>
+<line x1="620.0" y1="60" x2="620.0" y2="430" stroke="#e5e7eb" stroke-dasharray="4" stroke-width="1"/>
+<text x="620.0" y="450" text-anchor="middle" font-size="11" fill="#4b5563">1.00</text>
+<text x="355.0" y="480" text-anchor="middle" font-size="13" font-weight="600" fill="#374151">Probability p</text>
+<text x="25" y="245.0" text-anchor="middle" font-size="13" font-weight="600" fill="#374151" transform="rotate(-90 25 245.0)">Protocol Transmission Efficiency (%)</text>
+<polyline fill="none" stroke="#1f77b4" stroke-width="2.5" points="90.0,93.6 111.4,140.4 138.2,213.7 164.9,226.3 191.7,265.7 245.3,285.3 298.8,279.7 352.3,281.6 405.9,288.5 459.4,300.0 512.9,287.5 566.5,281.8 620.0,286.5" stroke-linejoin="round"/>
+<circle cx="90.0" cy="93.6" r="4" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="111.4" cy="140.4" r="4" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="138.2" cy="213.7" r="4" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="164.9" cy="226.3" r="4" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="191.7" cy="265.7" r="4" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="245.3" cy="285.3" r="4" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="298.8" cy="279.7" r="4" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="352.3" cy="281.6" r="4" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="405.9" cy="288.5" r="4" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="459.4" cy="300.0" r="4" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="512.9" cy="287.5" r="4" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="566.5" cy="281.8" r="4" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="620.0" cy="286.5" r="4" fill="#1f77b4" stroke="#ffffff" stroke-width="1.5"/>
+<line x1="645" y1="70" x2="665" y2="70" stroke="#1f77b4" stroke-width="2.5"/>
+<circle cx="655" cy="70" r="3.5" fill="#1f77b4"/>
+<text x="673" y="74" font-size="11" font-weight="500" fill="#1f2937">p-Persistent CSMA (N=5)</text>
+</svg>

@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="780" height="480" viewBox="0 0 780 480">
+  <rect width="100%" height="100%" fill="#FFFFFF" rx="8"/>
+  <text x="390.0" y="32" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="bold" fill="#111827">Bit Error Rate (BER) vs Additive Noise StdDev (M=4)</text>
+  <text x="390.0" y="50" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#6B7280">CSE/PC/B/S/314 Computer Networks Lab — Sampad De (002410501025)</text>
+  <line x1="95" y1="410.0" x2="605" y2="410.0" stroke="#E5E7EB" stroke-dasharray="3,3"/>
+  <text x="85" y="414.0" text-anchor="end" font-family="sans-serif" font-size="11" fill="#4B5563">0.000</text>
+  <line x1="95" y1="352.5" x2="605" y2="352.5" stroke="#E5E7EB" stroke-dasharray="3,3"/>
+  <text x="85" y="356.5" text-anchor="end" font-family="sans-serif" font-size="11" fill="#4B5563">0.080</text>
+  <line x1="95" y1="295.0" x2="605" y2="295.0" stroke="#E5E7EB" stroke-dasharray="3,3"/>
+  <text x="85" y="299.0" text-anchor="end" font-family="sans-serif" font-size="11" fill="#4B5563">0.160</text>
+  <line x1="95" y1="237.5" x2="605" y2="237.5" stroke="#E5E7EB" stroke-dasharray="3,3"/>
+  <text x="85" y="241.5" text-anchor="end" font-family="sans-serif" font-size="11" fill="#4B5563">0.240</text>
+  <line x1="95" y1="180.0" x2="605" y2="180.0" stroke="#E5E7EB" stroke-dasharray="3,3"/>
+  <text x="85" y="184.0" text-anchor="end" font-family="sans-serif" font-size="11" fill="#4B5563">0.320</text>
+  <line x1="95" y1="122.5" x2="605" y2="122.5" stroke="#E5E7EB" stroke-dasharray="3,3"/>
+  <text x="85" y="126.5" text-anchor="end" font-family="sans-serif" font-size="11" fill="#4B5563">0.400</text>
+  <line x1="95" y1="65.0" x2="605" y2="65.0" stroke="#E5E7EB" stroke-dasharray="3,3"/>
+  <text x="85" y="69.0" text-anchor="end" font-family="sans-serif" font-size="11" fill="#4B5563">0.480</text>
+  <line x1="95.0" y1="65" x2="95.0" y2="410" stroke="#F3F4F6"/>
+  <text x="95.0" y="430" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#4B5563">0.00</text>
+  <line x1="120.5" y1="65" x2="120.5" y2="410" stroke="#F3F4F6"/>
+  <text x="120.5" y="430" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#4B5563">0.10</text>
+  <line x1="146.0" y1="65" x2="146.0" y2="410" stroke="#F3F4F6"/>
+  <text x="146.0" y="430" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#4B5563">0.20</text>
+  <line x1="171.5" y1="65" x2="171.5" y2="410" stroke="#F3F4F6"/>
+  <text x="171.5" y="430" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#4B5563">0.30</text>
+  <line x1="197.0" y1="65" x2="197.0" y2="410" stroke="#F3F4F6"/>
+  <text x="197.0" y="430" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#4B5563">0.40</text>
+  <line x1="222.5" y1="65" x2="222.5" y2="410" stroke="#F3F4F6"/>
+  <text x="222.5" y="430" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#4B5563">0.50</text>
+  <line x1="248.0" y1="65" x2="248.0" y2="410" stroke="#F3F4F6"/>
+  <text x="248.0" y="430" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#4B5563">0.60</text>
+  <line x1="273.5" y1="65" x2="273.5" y2="410" stroke="#F3F4F6"/>
+  <text x="273.5" y="430" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#4B5563">0.70</text>
+  <line x1="299.0" y1="65" x2="299.0" y2="410" stroke="#F3F4F6"/>
+  <text x="299.0" y="430" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#4B5563">0.80</text>
+  <line x1="350.0" y1="65" x2="350.0" y2="410" stroke="#F3F4F6"/>
+  <text x="350.0" y="430" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#4B5563">1.00</text>
+  <line x1="401.0" y1="65" x2="401.0" y2="410" stroke="#F3F4F6"/>
+  <text x="401.0" y="430" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#4B5563">1.20</text>
+  <line x1="477.5" y1="65" x2="477.5" y2="410" stroke="#F3F4F6"/>
+  <text x="477.5" y="430" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#4B5563">1.50</text>
+  <line x1="605.0" y1="65" x2="605.0" y2="410" stroke="#F3F4F6"/>
+  <text x="605.0" y="430" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#4B5563">2.00</text>
+  <line x1="95" y1="410" x2="605" y2="410" stroke="#374151" stroke-width="2"/>
+  <line x1="95" y1="65" x2="95" y2="410" stroke="#374151" stroke-width="2"/>
+  <text x="350.0" y="462" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="600" fill="#374151">Channel Noise StdDev (sigma)</text>
+  <text x="25" y="237.5" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="600" fill="#374151" transform="rotate(-90 25 237.5)">Bit Error Rate (BER)</text>
+  <path d="M 95.0 410.0 L 120.5 410.0 L 146.0 410.0 L 171.5 408.2 L 197.0 397.4 L 222.5 370.5 L 248.0 332.8 L 273.5 327.4 L 299.0 278.9 L 350.0 235.7 L 401.0 207.0 L 477.5 174.7 L 605.0 110.0" fill="none" stroke="#DC2626" stroke-width="2.5"/>
+  <circle cx="95.0" cy="410.0" r="4" fill="#DC2626" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="120.5" cy="410.0" r="4" fill="#DC2626" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="146.0" cy="410.0" r="4" fill="#DC2626" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="171.5" cy="408.2" r="4" fill="#DC2626" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="197.0" cy="397.4" r="4" fill="#DC2626" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="222.5" cy="370.5" r="4" fill="#DC2626" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="248.0" cy="332.8" r="4" fill="#DC2626" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="273.5" cy="327.4" r="4" fill="#DC2626" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="299.0" cy="278.9" r="4" fill="#DC2626" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="350.0" cy="235.7" r="4" fill="#DC2626" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="401.0" cy="207.0" r="4" fill="#DC2626" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="477.5" cy="174.7" r="4" fill="#DC2626" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="605.0" cy="110.0" r="4" fill="#DC2626" stroke="#FFFFFF" stroke-width="1.5"/>
+  <line x1="620" y1="80" x2="645" y2="80" stroke="#DC2626" stroke-width="2.5"/>
+  <circle cx="632.5" cy="80" r="3.5" fill="#DC2626"/>
+  <text x="653" y="84" font-family="sans-serif" font-size="11" fill="#1F2937">Empirical BER (Simulated)</text>
+  <path d="M 95.0 410.0 L 120.5 410.0 L 146.0 410.0 L 171.5 409.7 L 197.0 405.5 L 222.5 393.7 L 248.0 375.7 L 273.5 355.0 L 299.0 334.1 L 350.0 296.0 L 401.0 264.6 L 477.5 228.6 L 605.0 188.3" fill="none" stroke="#2563EB" stroke-width="2.5" stroke-dasharray="5,4"/>
+  <circle cx="95.0" cy="410.0" r="4" fill="#2563EB" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="120.5" cy="410.0" r="4" fill="#2563EB" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="146.0" cy="410.0" r="4" fill="#2563EB" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="171.5" cy="409.7" r="4" fill="#2563EB" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="197.0" cy="405.5" r="4" fill="#2563EB" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="222.5" cy="393.7" r="4" fill="#2563EB" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="248.0" cy="375.7" r="4" fill="#2563EB" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="273.5" cy="355.0" r="4" fill="#2563EB" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="299.0" cy="334.1" r="4" fill="#2563EB" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="350.0" cy="296.0" r="4" fill="#2563EB" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="401.0" cy="264.6" r="4" fill="#2563EB" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="477.5" cy="228.6" r="4" fill="#2563EB" stroke="#FFFFFF" stroke-width="1.5"/>
+  <circle cx="605.0" cy="188.3" r="4" fill="#2563EB" stroke="#FFFFFF" stroke-width="1.5"/>
+  <line x1="620" y1="104" x2="645" y2="104" stroke="#2563EB" stroke-width="2.5" stroke-dasharray="5,4"/>
+  <circle cx="632.5" cy="104" r="3.5" fill="#2563EB"/>
+  <text x="653" y="108" font-family="sans-serif" font-size="11" fill="#1F2937">Theoretical Q-Function</text>
+</svg>
