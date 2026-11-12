@@ -18,6 +18,8 @@ server
 simulator
 station
 test_suite
+bin/
+obj/
 
 # Editor / IDE configuration
 .vscode/

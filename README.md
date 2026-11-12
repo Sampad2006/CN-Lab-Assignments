@@ -27,6 +27,7 @@ Each assignment is housed in its dedicated folder (`a1/` through `a6/`) and incl
 | **[`a4/`](./a4/)** | **Code Division Multiple Access: CDMA (CO3)** | Orthogonal chip code generation using **Walsh-Hadamard Matrices**; multi-station bipolar signal summation, AWGN channel simulation, and BER vs. noise analysis. | C++ CDMA engine, Walsh matrix generator, benchmarking suite, LaTeX report. |
 | **[`a5/`](./a5/)** | **Traffic Dissection & Wireshark Analysis (CO4/CO5)** | Live IEEE 802.11ac packet capture; deep packet inspection (DPI) of Ethernet II, ARP, IPv4/IPv6, ICMP, TCP stream reassembly, HTTP/1.1 latency, and OUI hardware resolution. | Live trace analysis, cropped Wireshark screenshots, comprehensive evaluation report. |
 | **[`a6/`](./a6/)** | **Cisco Packet Tracer Network Modeling (CO4/CO5)** | Modeling point-to-point crossover links, hub collision domains, switch CAM/ARP learning, multi-router static routing over serial WAN, DHCP (DORA), DNS, HTTP, and FTP services. | Cisco Packet Tracer models (`.pkt`), high-res lab screenshots, LaTeX report. |
+| **[`Group-Assignment/ARP/`](./Group-Assignment/ARP/)** | **Address Resolution Protocol (ARP - RFC 826)** | C++17 implementation of RFC 826 ARP over a Virtual L2 Ethernet Switch (UDP); dynamic/static ARP cache with TTL aging, outbound packet queuing, Gratuitous ARP conflict detection, and ARP spoofing mitigation. | C++17 engine, Virtual Switch daemon, Interactive Host CLI, 7-scenario simulator, unit tests, README. |
 
 ---
 
