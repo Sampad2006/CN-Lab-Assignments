@@ -20,6 +20,12 @@ station
 test_suite
 bin/
 obj/
+ftp_root/
+ftp_sim_root/
+ftp_client_scratch/
+
+#testing files
+# *.txt
 
 # Editor / IDE configuration
 .vscode/
