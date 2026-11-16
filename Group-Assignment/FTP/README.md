@@ -125,7 +125,7 @@ Client (User-PI)                             Server (Server-PI)
        |  <--- 220 JU Computer Networks FTP Ready -  |
        |  ---- USER student ---------------------->  |
        |  <--- 331 User name okay, need password --  |
-       |  ---- PASS cnlab ------------------------>  |
+       |  ---- PASS pass ------------------------->  |
        |  <--- 230 User logged in successfully ----  |
        |  ---- SYST ------------------------------>  |
        |  <--- 215 UNIX Type: L8 ------------------  |
@@ -256,7 +256,7 @@ cd Group-Assignment/FTP
 | Username | Password | Access Privileges | Purpose |
 | :--- | :--- | :--- | :--- |
 | `admin` | `admin123` | **Read-Write** | Full administrative rights (upload, download, delete, rename, mkdir) |
-| `student` | `cnlab` | **Read-Write** | Standard laboratory student account |
+| `student` | `pass` | **Read-Write** | Standard laboratory student account |
 | `guest` | `guest` | **Read-Only** | Guest account (download & listing only) |
 | `anonymous` | *(any / empty)* | **Read-Only** | Public anonymous access |
 
@@ -284,7 +284,7 @@ ftp> user admin admin123
 
 # Or prompted login:
 ftp> user student
-Password: cnlab
+Password: pass
 [+] Logged in successfully as student.
 ```
 

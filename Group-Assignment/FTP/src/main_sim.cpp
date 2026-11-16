@@ -56,7 +56,7 @@ int main() {
     uint16_t test_port = 21219;
     FtpServer server("127.0.0.1", test_port, sim_root);
     server.add_user("admin", "admin123", false);
-    server.add_user("student", "cnlab", false);
+    server.add_user("student", "pass", false);
     server.add_user("readonly_user", "pass", true);
     server.set_allow_anonymous(true, true);
 

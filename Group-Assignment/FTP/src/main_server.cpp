@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
               << "[+] Virtual root: " << root_dir << "\n"
               << "[+] Pre-configured accounts:\n"
               << "    - admin    : admin123 (Read-Write)\n"
-              << "    - student  : cnlab    (Read-Write)\n"
+              << "    - student  : pass     (Read-Write)\n"
               << "    - guest    : guest    (Read-Only)\n"
               << "    - anonymous: (empty)  (Read-Only)\n"
               << "[*] Press Ctrl+C to terminate cleanly.\n"

@@ -11,7 +11,7 @@ FtpServer::FtpServer(std::string bind_ip, uint16_t port, std::string root_dir)
       fs_(std::make_shared<SandboxFs>(std::move(root_dir))) {
     // Register default out-of-the-box accounts
     add_user("admin", "admin123", false);   // Full Read-Write administrator
-    add_user("student", "cnlab", false);    // Laboratory student account
+    add_user("student", "pass", false);     // Laboratory student account
     add_user("guest", "guest", true);       // Read-Only guest account
     set_allow_anonymous(true, true);        // Anonymous read-only enabled by default
 }
