@@ -61,7 +61,8 @@ Every ARP payload (28 bytes) is encapsulated inside a standard Ethernet II frame
 
 * **Broadcast ARP Request**: `Dest MAC = FF:FF:FF:FF:FF:FF`, flooded across the local broadcast domain.
 * **Unicast ARP Reply**: `Dest MAC = Requesting Host's MAC`, routed directly by the L2 switch.
-* **Post-Resolution Data Frame**: `EtherType = 0x88B5` (or `0x0800`), containing higher-layer application payload transmitted directly to resolved MAC.
+* **Post-Resolution Data Frame**: `EtherType = 0x88B5` (or `0x0800`), containing higher-layer text payload transmitted directly to resolved MAC.
+* **Post-Resolution File Transfer Frame**: `EtherType = 0x88B6`, containing chunked binary/text file protocol segments (START, DATA, END) streamed directly over UDP.
 
 ---
 
@@ -79,6 +80,7 @@ Group-Assignment/ARP/
 │   ├── ethernet.hpp              # Ethernet II frame header and binary codec
 │   ├── arp_packet.hpp            # RFC 826 packet structures & serializers
 │   ├── arp_cache.hpp             # Thread-safe ARP Cache table & TTL aging
+│   ├── file_transfer.hpp         # Chunked UDP file transfer structures (START, DATA, END)
 │   ├── host_node.hpp             # Virtual station, socket engine & packet queue
 │   ├── virtual_switch.hpp        # Virtual L2 Ethernet Switch & CAM table
 │   └── logger.hpp                # Colorized Wireshark-like dissector logger
@@ -104,16 +106,24 @@ Group-Assignment/ARP/
    * **Intelligent Forwarding**: Floods broadcast frames (`FF:FF:FF:FF:FF:FF`) across all connected ports except the sender, while unicasting frames directly to the learned port.
 
 2. **Outbound Packet Buffering (`pending_queue_`)**:
-   * When an application sends higher-layer data to a destination IP whose MAC is currently unresolved (Cache MISS), the host buffers the packet in an internal queue.
-   * Host sends an ARP Request broadcast. Upon arrival of the ARP Reply, the MAC mapping is saved and all queued packets are automatically released and transmitted.
+   * When an application sends higher-layer data or files to a destination IP whose MAC is currently unresolved (Cache MISS), the host buffers the packet or file transfer request in an internal queue.
+   * Host sends an ARP Request broadcast. Upon arrival of the ARP Reply, the MAC mapping is saved and all queued packets/files are automatically released and transmitted.
 
-3. **Provision for Displaying IP-to-MAC Mappings at Each Host (`show arp` / `arp -a`)**:
+3. **Post-ARP UDP File Transfer Engine (`file_transfer.hpp`)**:
+   * Enables sending arbitrary local binary and text files (`send-file <ip> <filepath>`).
+   * Automatically partitions files into 1024-byte MTU-safe segments (`FILE_CHUNK_SIZE`).
+   * Protocol exchanges:
+     - `FILE_START`: Communicates transfer ID, filename, total file size, and total chunk count.
+     - `FILE_DATA`: Streams sequenced chunks across the virtual switch over UDP.
+     - `FILE_END`: Signals completion; receiver reassembles chunks and writes the file into `received_files/<host_name>/<filename>`.
+
+4. **Provision for Displaying IP-to-MAC Mappings at Each Host (`show arp` / `arp -a`)**:
    * Displays the host's active ARP table with columns: IP Address, MAC Address, State (`REACHABLE`, `STATIC`, `INCOMPLETE`, `EXPIRED`), remaining TTL, and HW Type.
 
-4. **Dynamic TTL Aging & Cache Invalidation**:
+5. **Dynamic TTL Aging & Cache Invalidation**:
    * Cache entries transition through RFC lifecycle states. A background timer thread audits entries every second and garbage-collects expired records.
 
-5. **Security & ARP Spoofing Mitigation**:
+6. **Security & ARP Spoofing Mitigation**:
    * Supports `STATIC` permanent entries that are immune to dynamic overwrites, providing defense against Man-in-the-Middle (MitM) ARP poisoning attacks.
    * Gratuitous ARP (GARP) support for interface IP announcement and duplicate IP conflict detection.
 
@@ -176,6 +186,11 @@ The automated simulator (`bin/arp_sim`) demonstrates seven scenarios:
 |   - Attacker attempts cache poisoning via unsolicited ARP reply.              |
 |   - Demonstrates vulnerability of dynamic cache and mitigation via STATIC.    |
 +-------------------------------------------------------------------------------+
+| Scenario 8: UDP File Transfer Post-ARP Resolution                             |
+|   - Host A sends a multi-chunk document file to Host B over UDP.              |
+|   - Packets stream through virtual L2 switch, reassembled at Host B, and      |
+|     verified on disk under `received_files/HostB/demo_document.txt`.          |
++-------------------------------------------------------------------------------+
 ```
 
 ---
@@ -202,6 +217,7 @@ For manual, multi-terminal testing:
 ### Available Host Commands:
 * `show arp` / `arp -a`: Inspect local IP-to-MAC resolution table.
 * `send <target_ip> <message>`: Send data frame (triggers resolution if needed).
+* `send-file <target_ip> <filepath>`: Stream file to target IP over UDP (triggers resolution if needed).
 * `ping <target_ip>`: Send test ping frame.
 * `gratuitous`: Broadcast Gratuitous ARP announcement.
 * `static <ip> <mac>`: Add protected static mapping.

@@ -4,6 +4,9 @@
 #include <unistd.h>
 #include <cstring>
 #include <iostream>
+#include <fstream>
+#include <filesystem>
+#include <algorithm>
 
 namespace arp {
 
@@ -194,16 +197,23 @@ void HostNode::flush_pending_for_ip(const IpAddress& ip, const MacAddress& mac) 
     }
 
     for (const auto& qp : to_send) {
-        EthernetFrame frame;
-        frame.dst = mac;
-        frame.src = mac_;
-        frame.ethertype = qp.ethertype;
-        frame.payload = qp.payload;
+        if (qp.ethertype == ETHERTYPE_FILE) {
+            std::string filepath(qp.payload.begin(), qp.payload.end());
+            uint32_t transfer_id = static_cast<uint32_t>(std::chrono::system_clock::now().time_since_epoch().count());
+            Logger::info(name_, "ARP resolved! Releasing queued file transfer: " + filepath);
+            transmit_file_stream(mac, filepath, transfer_id);
+        } else {
+            EthernetFrame frame;
+            frame.dst = mac;
+            frame.src = mac_;
+            frame.ethertype = qp.ethertype;
+            frame.payload = qp.payload;
 
-        std::string msg(qp.payload.begin(), qp.payload.end());
-        Logger::packet("TX", name_ + " -> " + mac.to_string()
-                       + " [QUEUED DATA RELEASED] \"" + msg + "\"");
-        send_raw_frame(frame);
+            std::string msg(qp.payload.begin(), qp.payload.end());
+            Logger::packet("TX", name_ + " -> " + mac.to_string()
+                           + " [QUEUED DATA RELEASED] \"" + msg + "\"");
+            send_raw_frame(frame);
+        }
     }
 }
 
@@ -250,6 +260,8 @@ void HostNode::handle_ethernet_frame(const uint8_t* buf, size_t len) {
         }
     } else if (frame.ethertype == ETHERTYPE_DATA) {
         handle_data_packet(frame);
+    } else if (frame.ethertype == ETHERTYPE_FILE) {
+        handle_file_packet(frame);
     }
 }
 
@@ -313,6 +325,196 @@ void HostNode::handle_data_packet(const EthernetFrame& frame) {
     std::string msg(frame.payload.begin(), frame.payload.end());
     Logger::success(name_, "Delivered DATA from " + frame.src.to_string()
                     + ": \"" + msg + "\" (" + std::to_string(frame.payload.size()) + " bytes)");
+}
+
+bool HostNode::send_file(const IpAddress& target_ip, const std::string& filepath) {
+    std::ifstream file(filepath, std::ios::binary);
+    if (!file.is_open()) {
+        Logger::error(name_, "Cannot open file for transfer: " + filepath);
+        return false;
+    }
+    file.close();
+
+    MacAddress target_mac;
+    if (arp_cache_.lookup(target_ip, target_mac)) {
+        Logger::info(name_, "ARP Cache HIT for file transfer to " + target_ip.to_string() + " (" + target_mac.to_string() + ")");
+        uint32_t transfer_id = static_cast<uint32_t>(std::chrono::system_clock::now().time_since_epoch().count());
+        return transmit_file_stream(target_mac, filepath, transfer_id);
+    }
+
+    Logger::warn(name_, "ARP Cache MISS for " + target_ip.to_string() + ". Queueing file \"" + filepath + "\" & resolving via ARP.");
+    {
+        std::lock_guard<std::mutex> lock(queue_mutex_);
+        QueuedPacket qp;
+        qp.target_ip = target_ip;
+        qp.ethertype = ETHERTYPE_FILE;
+        qp.payload.assign(filepath.begin(), filepath.end());
+        pending_queue_.push_back(std::move(qp));
+    }
+    return send_arp_request(target_ip);
+}
+
+bool HostNode::transmit_file_stream(const MacAddress& target_mac, const std::string& filepath, uint32_t transfer_id) {
+    std::ifstream file(filepath, std::ios::binary | std::ios::ate);
+    if (!file.is_open()) {
+        Logger::error(name_, "Failed to read file: " + filepath);
+        return false;
+    }
+    std::streamsize file_size = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    std::vector<uint8_t> buffer(file_size);
+    if (file_size > 0) {
+        if (!file.read(reinterpret_cast<char*>(buffer.data()), file_size)) {
+            Logger::error(name_, "Error reading file content: " + filepath);
+            return false;
+        }
+    }
+    file.close();
+
+    std::filesystem::path p(filepath);
+    std::string filename = p.filename().string();
+    if (filename.empty()) filename = "unnamed.bin";
+
+    uint32_t total_chunks = (file_size == 0) ? 1 : static_cast<uint32_t>((file_size + FILE_CHUNK_SIZE - 1) / FILE_CHUNK_SIZE);
+
+    // 1. Send FILE_START frame
+    FilePacketHeader start_hdr{};
+    start_hdr.msg_type = static_cast<uint8_t>(FileMsgType::START);
+    start_hdr.transfer_id = transfer_id;
+    start_hdr.chunk_idx = 0;
+    start_hdr.total_chunks = total_chunks;
+    start_hdr.chunk_size = 0;
+    start_hdr.file_size = static_cast<uint32_t>(file_size);
+    std::strncpy(start_hdr.filename, filename.c_str(), sizeof(start_hdr.filename) - 1);
+
+    EthernetFrame start_frame;
+    start_frame.dst = target_mac;
+    start_frame.src = mac_;
+    start_frame.ethertype = ETHERTYPE_FILE;
+    start_frame.payload.resize(sizeof(FilePacketHeader));
+    std::memcpy(start_frame.payload.data(), &start_hdr, sizeof(FilePacketHeader));
+
+    Logger::packet("TX", name_ + " -> " + target_mac.to_string() + " [FILE_START] \"" + filename +
+                   "\" (" + std::to_string(file_size) + " bytes, " + std::to_string(total_chunks) + " chunks)");
+    send_raw_frame(start_frame);
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+
+    // 2. Stream FILE_DATA chunks
+    for (uint32_t idx = 0; idx < total_chunks; ++idx) {
+        size_t offset = idx * FILE_CHUNK_SIZE;
+        size_t chunk_len = 0;
+        if (offset < static_cast<size_t>(file_size)) {
+            chunk_len = std::min(FILE_CHUNK_SIZE, static_cast<size_t>(file_size) - offset);
+        }
+
+        FilePacketHeader data_hdr{};
+        data_hdr.msg_type = static_cast<uint8_t>(FileMsgType::DATA);
+        data_hdr.transfer_id = transfer_id;
+        data_hdr.chunk_idx = idx;
+        data_hdr.total_chunks = total_chunks;
+        data_hdr.chunk_size = static_cast<uint32_t>(chunk_len);
+        data_hdr.file_size = static_cast<uint32_t>(file_size);
+        std::strncpy(data_hdr.filename, filename.c_str(), sizeof(data_hdr.filename) - 1);
+
+        EthernetFrame data_frame;
+        data_frame.dst = target_mac;
+        data_frame.src = mac_;
+        data_frame.ethertype = ETHERTYPE_FILE;
+        data_frame.payload.resize(sizeof(FilePacketHeader) + chunk_len);
+        std::memcpy(data_frame.payload.data(), &data_hdr, sizeof(FilePacketHeader));
+        if (chunk_len > 0) {
+            std::memcpy(data_frame.payload.data() + sizeof(FilePacketHeader), buffer.data() + offset, chunk_len);
+        }
+
+        send_raw_frame(data_frame);
+        std::this_thread::sleep_for(std::chrono::microseconds(500));
+    }
+
+    // 3. Send FILE_END frame
+    FilePacketHeader end_hdr{};
+    end_hdr.msg_type = static_cast<uint8_t>(FileMsgType::END);
+    end_hdr.transfer_id = transfer_id;
+    end_hdr.chunk_idx = total_chunks;
+    end_hdr.total_chunks = total_chunks;
+    end_hdr.chunk_size = 0;
+    end_hdr.file_size = static_cast<uint32_t>(file_size);
+    std::strncpy(end_hdr.filename, filename.c_str(), sizeof(end_hdr.filename) - 1);
+
+    EthernetFrame end_frame;
+    end_frame.dst = target_mac;
+    end_frame.src = mac_;
+    end_frame.ethertype = ETHERTYPE_FILE;
+    end_frame.payload.resize(sizeof(FilePacketHeader));
+    std::memcpy(end_frame.payload.data(), &end_hdr, sizeof(FilePacketHeader));
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    send_raw_frame(end_frame);
+
+    Logger::success(name_, "File transfer completed: \"" + filename + "\" -> " + target_mac.to_string());
+    return true;
+}
+
+void HostNode::handle_file_packet(const EthernetFrame& frame) {
+    if (frame.payload.size() < sizeof(FilePacketHeader)) {
+        return;
+    }
+    const FilePacketHeader* hdr = reinterpret_cast<const FilePacketHeader*>(frame.payload.data());
+    uint32_t tid = hdr->transfer_id;
+
+    std::lock_guard<std::mutex> lock(file_mutex_);
+    auto msg_type = static_cast<FileMsgType>(hdr->msg_type);
+
+    if (msg_type == FileMsgType::START) {
+        FileTransferSession session;
+        session.transfer_id = tid;
+        session.filename = hdr->filename;
+        session.file_size = hdr->file_size;
+        session.total_chunks = hdr->total_chunks;
+        session.received_chunks = 0;
+        session.chunks.resize(hdr->total_chunks);
+        session.chunk_received.assign(hdr->total_chunks, false);
+        rx_file_sessions_[tid] = session;
+
+        Logger::packet("RX", name_ + " <- [FILE_START] Incoming file \"" + session.filename +
+                       "\" (" + std::to_string(session.file_size) + " bytes, " +
+                       std::to_string(session.total_chunks) + " chunks) from " + frame.src.to_string());
+    } else if (msg_type == FileMsgType::DATA) {
+        auto it = rx_file_sessions_.find(tid);
+        if (it == rx_file_sessions_.end()) {
+            return;
+        }
+        uint32_t cidx = hdr->chunk_idx;
+        if (cidx < it->second.total_chunks && !it->second.chunk_received[cidx]) {
+            it->second.chunks[cidx].assign(frame.payload.begin() + sizeof(FilePacketHeader), frame.payload.end());
+            it->second.chunk_received[cidx] = true;
+            it->second.received_chunks++;
+        }
+    } else if (msg_type == FileMsgType::END) {
+        auto it = rx_file_sessions_.find(tid);
+        if (it == rx_file_sessions_.end()) {
+            return;
+        }
+
+        std::string host_dir = rx_directory_ + "/" + name_;
+        std::error_code ec;
+        std::filesystem::create_directories(host_dir, ec);
+
+        std::string out_filepath = host_dir + "/" + it->second.filename;
+        std::ofstream outfile(out_filepath, std::ios::binary);
+        if (outfile.is_open()) {
+            for (const auto& chunk : it->second.chunks) {
+                outfile.write(reinterpret_cast<const char*>(chunk.data()), chunk.size());
+            }
+            outfile.close();
+            Logger::success(name_, "File \"" + it->second.filename + "\" (" +
+                            std::to_string(it->second.file_size) + " bytes) saved to: " + out_filepath);
+        } else {
+            Logger::error(name_, "Failed to write received file to: " + out_filepath);
+        }
+
+        rx_file_sessions_.erase(it);
+    }
 }
 
 void HostNode::timer_loop() {

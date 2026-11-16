@@ -5,9 +5,11 @@
 #include "ethernet.hpp"
 #include "arp_packet.hpp"
 #include "arp_cache.hpp"
+#include "file_transfer.hpp"
 #include <string>
 #include <vector>
 #include <queue>
+#include <unordered_map>
 #include <thread>
 #include <atomic>
 #include <functional>
@@ -37,6 +39,11 @@ private:
     std::mutex queue_mutex_;
     std::vector<QueuedPacket> pending_queue_;
 
+    // File transfer sessions
+    std::mutex file_mutex_;
+    std::unordered_map<uint32_t, FileTransferSession> rx_file_sessions_;
+    std::string rx_directory_{"received_files"};
+
     // Optional packet receive callback
     std::function<void(const std::string&, const EthernetFrame&)> on_frame_received_;
 
@@ -45,8 +52,10 @@ private:
     void handle_ethernet_frame(const uint8_t* buf, size_t len);
     void handle_arp_packet(const EthernetFrame& frame, const ArpPacket& arp_pkt);
     void handle_data_packet(const EthernetFrame& frame);
+    void handle_file_packet(const EthernetFrame& frame);
     void flush_pending_for_ip(const IpAddress& ip, const MacAddress& mac);
     bool send_raw_frame(const EthernetFrame& frame);
+    bool transmit_file_stream(const MacAddress& target_mac, const std::string& filepath, uint32_t transfer_id);
 
 public:
     HostNode(const std::string& name,
@@ -67,12 +76,15 @@ public:
 
     // Core networking operations
     bool send_data(const IpAddress& target_ip, const std::string& message);
+    bool send_file(const IpAddress& target_ip, const std::string& filepath);
     bool send_arp_request(const IpAddress& target_ip);
     bool send_gratuitous_arp();
     bool send_spoofed_arp_reply(const IpAddress& victim_ip,
                                 const MacAddress& victim_mac,
                                 const IpAddress& spoofed_ip,
                                 const MacAddress& spoofed_mac);
+
+    void set_received_dir(const std::string& dir) { rx_directory_ = dir; }
 
     // Show IP to MAC mappings available at this host
     std::string show_arp_table() const;

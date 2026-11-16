@@ -20,6 +20,8 @@ station
 test_suite
 bin/
 obj/
+received_files/
+demo_document.txt
 ftp_root/
 ftp_sim_root/
 ftp_client_scratch/

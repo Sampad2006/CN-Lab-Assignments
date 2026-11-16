@@ -1,5 +1,6 @@
 #include "arp_packet.hpp"
 #include "ethernet.hpp"
+#include "file_transfer.hpp"
 #include <cassert>
 #include <iostream>
 #include <cstring>
@@ -76,11 +77,28 @@ void test_ethernet_frame_codec() {
     std::cout << "[PASS] Ethernet frame 14-byte header codec test passed.\n";
 }
 
+void test_file_packet_header() {
+    arp::FilePacketHeader hdr{};
+    hdr.msg_type = static_cast<uint8_t>(arp::FileMsgType::START);
+    hdr.transfer_id = 12345;
+    hdr.chunk_idx = 0;
+    hdr.total_chunks = 10;
+    hdr.chunk_size = 1024;
+    hdr.file_size = 10240;
+    std::strncpy(hdr.filename, "document.pdf", sizeof(hdr.filename) - 1);
+
+    assert(sizeof(arp::FilePacketHeader) == 149);
+    assert(hdr.total_chunks == 10);
+    assert(std::string(hdr.filename) == "document.pdf");
+    std::cout << "[PASS] File transfer packed header test passed.\n";
+}
+
 int main() {
     std::cout << "Running Codec & Serialization Unit Tests...\n";
     test_mac_and_ip();
     test_arp_packet_codec();
     test_ethernet_frame_codec();
+    test_file_packet_header();
     std::cout << "All Codec Tests PASSED!\n";
     return 0;
 }

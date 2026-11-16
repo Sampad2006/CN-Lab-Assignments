@@ -17,6 +17,7 @@ struct EthernetHeader {
 constexpr uint16_t ETHERTYPE_IPV4 = 0x0800;
 constexpr uint16_t ETHERTYPE_ARP  = 0x0806;
 constexpr uint16_t ETHERTYPE_DATA = 0x88B5; // IEEE 802 Local Experimental
+constexpr uint16_t ETHERTYPE_FILE = 0x88B6; // File transfer protocol over Ethernet
 
 struct EthernetFrame {
     MacAddress dst;

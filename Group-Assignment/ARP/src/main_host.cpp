@@ -8,6 +8,7 @@ void print_help() {
     std::cout << "\n--- Available Host CLI Commands ---\n"
               << "  show arp | arp -a       : Display local ARP cache (IP -> MAC table)\n"
               << "  send <ip> <message>     : Send payload to target IP (triggers ARP if needed)\n"
+              << "  send-file <ip> <file>   : Transfer file to target IP over UDP (triggers ARP)\n"
               << "  ping <ip>               : Send ping data frame to target IP\n"
               << "  arp-req <ip>            : Explicitly broadcast ARP Request for target IP\n"
               << "  gratuitous              : Broadcast Gratuitous ARP announcement\n"
@@ -71,6 +72,13 @@ int main(int argc, char* argv[]) {
                 host.send_data(arp::IpAddress(target_ip_str), msg);
             } else {
                 std::cout << "Usage: send <target_ip> <message>\n";
+            }
+        } else if (cmd == "send-file" || cmd == "file") {
+            std::string target_ip_str, filepath;
+            if (iss >> target_ip_str >> filepath) {
+                host.send_file(arp::IpAddress(target_ip_str), filepath);
+            } else {
+                std::cout << "Usage: send-file <target_ip> <filepath>\n";
             }
         } else if (cmd == "ping") {
             std::string target_ip_str;

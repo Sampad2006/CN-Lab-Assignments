@@ -2,6 +2,7 @@
 #include "host_node.hpp"
 #include "logger.hpp"
 #include <iostream>
+#include <fstream>
 #include <chrono>
 #include <thread>
 
@@ -134,8 +135,40 @@ int main() {
     print_step("Host A's ARP Cache remained protected due to STATIC entry policy:");
     std::cout << hostA.show_arp_table();
 
+    // -------------------------------------------------------------
+    // DEMO 8: File Transfer over UDP post-ARP resolution
+    // -------------------------------------------------------------
+    print_banner("DEMO 8: Binary & Text File Transfer over UDP post-ARP Resolution");
+    print_step("Creating a sample file 'demo_document.txt' (2500 bytes to test multi-chunk fragmentation)...");
+    {
+        std::ofstream sample("demo_document.txt");
+        sample << "===========================================================\n"
+               << " Computer Networks Laboratory - Jadavpur University\n"
+               << " RFC 826 Address Resolution Protocol & UDP File Transfer Demo\n"
+               << "===========================================================\n";
+        for (int i = 1; i <= 60; ++i) {
+            sample << "Line " << i << ": Testing UDP chunked file stream across virtual L2 switch.\n";
+        }
+    }
+
+    print_step("Host A initiates file transfer of 'demo_document.txt' to Host B (192.168.1.20)...");
+    hostA.send_file(arp::IpAddress("192.168.1.20"), "demo_document.txt");
+    std::this_thread::sleep_for(std::chrono::milliseconds(800));
+
+    print_step("Checking received file at Host B:");
+    std::ifstream check("received_files/HostB/demo_document.txt");
+    if (check.is_open()) {
+        std::string first_line;
+        std::getline(check, first_line);
+        std::cout << arp::colors::GREEN << "[SUCCESS] File verified on Host B disk: received_files/HostB/demo_document.txt\n"
+                  << "First line content: \"" << first_line << "\"" << arp::colors::RESET << "\n";
+        check.close();
+    } else {
+        std::cerr << arp::colors::RED << "[FAIL] Received file not found on Host B." << arp::colors::RESET << "\n";
+    }
+
     // Clean up
-    print_banner("SIMULATION COMPLETE: All scenarios successfully executed!");
+    print_banner("SIMULATION COMPLETE: All 8 scenarios successfully executed!");
     hostA.stop();
     hostB.stop();
     hostC.stop();
